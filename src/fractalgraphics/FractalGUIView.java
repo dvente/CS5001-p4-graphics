@@ -21,7 +21,6 @@ public class FractalGUIView extends JPanel implements Observer {
                 MandelbrotCalculator.INITIAL_MAX_REAL, MandelbrotCalculator.INITIAL_MIN_IMAGINARY,
                 MandelbrotCalculator.INITIAL_MAX_IMAGINARY, MandelbrotCalculator.INITIAL_MAX_ITERATIONS,
                 MandelbrotCalculator.DEFAULT_RADIUS_SQUARED);
-        printMandelbrotData();
 
     }
 
