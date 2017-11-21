@@ -74,7 +74,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	applyNewConfig(defaultConfig);
+            	reset();
 
             }
         });
@@ -86,8 +86,7 @@ public class FractalGUIView extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                configHistoryUndone.push(currentConfig);
-                applyNewConfig(configHistory.pop());
+                undo();
 
             }
         });
@@ -99,8 +98,7 @@ public class FractalGUIView extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                configHistory.push(currentConfig);
-                applyNewConfig(configHistoryUndone.pop());
+            	redo();
 
             }
         });
@@ -110,6 +108,22 @@ public class FractalGUIView extends JFrame implements Observer {
 
     }
     
+    private void reset() {
+    	applyNewConfig(defaultConfig);
+    	
+    }
+    
+    private void redo() {
+        configHistory.push(currentConfig);
+        applyNewConfig(configHistoryUndone.pop());
+    	
+    }
+    
+    
+    private void undo() {
+    	configHistoryUndone.push(currentConfig);
+        applyNewConfig(configHistory.pop());
+    }
     public void applyNewConfig(FractalGUIConfig newConfig) {
 
         //Store config for undo
