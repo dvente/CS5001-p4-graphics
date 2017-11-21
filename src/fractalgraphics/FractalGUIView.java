@@ -2,6 +2,7 @@ package fractalgraphics;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,11 @@ public class FractalGUIView extends JFrame implements Observer {
 	private JMenuItem redoButton;
 	
 	private int firstX, firstY, secondX = -1, secondY = -1;
+	
+	private int leftX;
+	private int upperY;
+	private int rightX;
+	private int lowerY;
 	
 	private int currentXSize = DEFAULT_X_RESOLUTION;
 	private int curretnYSize = DEFAULT_Y_RESOLUTION;
@@ -109,6 +115,32 @@ public class FractalGUIView extends JFrame implements Observer {
 		getContentPane().add(canvas);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION);
+		
+		addMouseMotionListener(new MouseMotionListener() {
+
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				secondX = e.getX();
+				secondY = e.getY();
+				leftX = Math.min(firstX, secondX);
+				upperY = Math.max(firstY, secondY);
+							
+				int width = Math.abs(firstX-secondX);
+				int height = Math.abs(firstY-secondY);
+				
+				rightX = leftX + Math.max(width,height);
+				lowerY = upperY - Math.max(width,height);
+				repaint();
+				
+			}
+		});
 
 		addMouseListener(new MouseListener() {
 
@@ -154,39 +186,6 @@ public class FractalGUIView extends JFrame implements Observer {
 				
 			}
 		});
-		
-		
-		
-//		addComponentListener(new ComponentListener() {
-//
-//			@Override
-//			public void componentResized(ComponentEvent e) {
-//
-//				Rectangle r = getBounds();
-//				controler.applyNewConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
-//						currentConfig.getMaxReal(), currentConfig.getMaxImaginary(), currentConfig.getMinImaginary(),
-//						currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getEndColor(),
-//						currentConfig.getEndColor()));
-//			}
-//
-//			@Override
-//			public void componentHidden(ComponentEvent arg0) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void componentMoved(ComponentEvent arg0) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void componentShown(ComponentEvent arg0) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//		});
 
 		setVisible(true);
 
@@ -201,6 +200,8 @@ public class FractalGUIView extends JFrame implements Observer {
 	
 	@Override
 	public void paint(Graphics g) {
+		super.paint(g);
+		g.drawRect(leftX,lowerY,rightX-leftX,upperY-lowerY);
 		
 	}
 
