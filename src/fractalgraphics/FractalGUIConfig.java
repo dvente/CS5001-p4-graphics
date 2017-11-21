@@ -4,22 +4,22 @@ import java.awt.Color;
 
 public class FractalGUIConfig {
 
+
+
     @Override
-    public String toString() {
+	public String toString() {
+		return "FractalGUIConfig [xResolution=" + xResolution + ", yResolution=" + yResolution + ", minReal=" + minReal
+				+ ", maxReal=" + maxReal + ", minImaginary=" + minImaginary + ", maxImaginary=" + maxImaginary
+				+ ", maxIterations=" + maxIterations + ", radiusSquared=" + radiusSquared + ", startingColor="
+				+ startingColor + ", endColor=" + endColor + "]";
+	}
 
-        return "FractalGUIConfig [xResolution=" + xResolution + ", yResolution=" + yResolution + ", maxReal=" + maxReal
-                + ", maxImaginary=" + maxImaginary + ", minReal=" + minReal + ", minImaginary=" + minImaginary
-                + ", maxIterations=" + maxIterations + ", radiusSquared=" + radiusSquared + ", startingColor="
-                + startingColor + ", endColor=" + endColor + "]";
-    }
-
-    private final int xResolution;
+	private final int xResolution;
     private final int yResolution;
-
-    private final double maxReal;
-    private final double maxImaginary;
     private final double minReal;
+    private final double maxReal;
     private final double minImaginary;
+    private final double maxImaginary;
     private final int maxIterations;
     private final double radiusSquared;
     private final Color startingColor;
@@ -38,6 +38,13 @@ public class FractalGUIConfig {
     public FractalGUIConfig(int xResolution, int yResolution, double minReal, double maxReal, double minImaginary,
             double maxImaginary, int maxIterations, double radiusSquared, Color startingColor, Color endColor) {
         super();
+        System.out.println("maxReal: " + maxReal);
+        System.out.println("minReal: " + minReal);
+        assert maxReal > minReal;
+        assert maxImaginary > minImaginary;
+        assert xResolution > 1;
+        assert yResolution > 1;
+        assert maxIterations > 2;
         this.xResolution = xResolution;
         this.yResolution = yResolution;
         this.maxReal = maxReal;
