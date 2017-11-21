@@ -3,85 +3,91 @@ package fractalgraphics;
 import java.awt.Color;
 
 public class FractalGUIConfig {
-	private final int xResolution;
-	private final int yResolution;
-	
-	private final double maxReal;
-	private final double maxImaginary;
-	private final double minReal;
-	private final double minImaginary; 
-	private final int maxIterations;
-	private final double radiusSquared;
-	private final Color startingColor;
-	private final Color endColor;
-	
 
+    @Override
+    public String toString() {
 
+        return "FractalGUIConfig [xResolution=" + xResolution + ", yResolution=" + yResolution + ", maxReal=" + maxReal
+                + ", maxImaginary=" + maxImaginary + ", minReal=" + minReal + ", minImaginary=" + minImaginary
+                + ", maxIterations=" + maxIterations + ", radiusSquared=" + radiusSquared + ", startingColor="
+                + startingColor + ", endColor=" + endColor + "]";
+    }
 
-	public int getxResolution() {
-		return xResolution;
-	}
+    private final int xResolution;
+    private final int yResolution;
 
+    private final double maxReal;
+    private final double maxImaginary;
+    private final double minReal;
+    private final double minImaginary;
+    private final int maxIterations;
+    private final double radiusSquared;
+    private final Color startingColor;
+    private final Color endColor;
 
-	public int getyResolution() {
-		return yResolution;
-	}
+    public int getxResolution() {
 
+        return xResolution;
+    }
 
-	public FractalGUIConfig(int xResolution, int yResolution, double maxReal, double maxImaginary, double minReal,
-			double minImaginary, int maxIterations, double radiusSquared, Color startingColor, Color endColor) {
-		super();
-		this.xResolution = xResolution;
-		this.yResolution = yResolution;
-		this.maxReal = maxReal;
-		this.maxImaginary = maxImaginary;
-		this.minReal = minReal;
-		this.minImaginary = minImaginary;
-		this.maxIterations = maxIterations;
-		this.radiusSquared = radiusSquared;
-		this.startingColor = startingColor;
-		this.endColor = endColor;
-	}
+    public int getyResolution() {
 
+        return yResolution;
+    }
 
-	public double getMaxReal() {
-		return maxReal;
-	}
+    public FractalGUIConfig(int xResolution, int yResolution, double minReal, double maxReal, double minImaginary,
+            double maxImaginary, int maxIterations, double radiusSquared, Color startingColor, Color endColor) {
+        super();
+        this.xResolution = xResolution;
+        this.yResolution = yResolution;
+        this.maxReal = maxReal;
+        this.maxImaginary = maxImaginary;
+        this.minReal = minReal;
+        this.minImaginary = minImaginary;
+        this.maxIterations = maxIterations;
+        this.radiusSquared = radiusSquared;
+        this.startingColor = startingColor;
+        this.endColor = endColor;
+    }
 
+    public double getMaxReal() {
 
-	public double getMaxImaginary() {
-		return maxImaginary;
-	}
+        return maxReal;
+    }
 
+    public double getMaxImaginary() {
 
-	public double getMinReal() {
-		return minReal;
-	}
+        return maxImaginary;
+    }
 
+    public double getMinReal() {
 
-	public double getMinImaginary() {
-		return minImaginary;
-	}
+        return minReal;
+    }
 
+    public double getMinImaginary() {
 
-	public int getMaxIterations() {
-		return maxIterations;
-	}
+        return minImaginary;
+    }
 
+    public int getMaxIterations() {
 
-	public double getRadiusSquared() {
-		return radiusSquared;
-	}
+        return maxIterations;
+    }
 
+    public double getRadiusSquared() {
 
-	public Color getStartingColor() {
-		return startingColor;
-	}
+        return radiusSquared;
+    }
 
+    public Color getStartingColor() {
 
-	public Color getEndColor() {
-		return endColor;
-	}
+        return startingColor;
+    }
 
+    public Color getEndColor() {
+
+        return endColor;
+    }
 
 }
