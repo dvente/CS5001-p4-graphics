@@ -19,6 +19,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class FractalGUIView extends JFrame implements Observer {
 
@@ -31,6 +34,7 @@ public class FractalGUIView extends JFrame implements Observer {
 	private JMenuItem resetButton;
 	private JMenuItem undoButton;
 	private JMenuItem redoButton;
+	private JTextField maxIterationInputField;
 	
 	private int firstX, firstY, secondX = -1, secondY = -1;
 	
@@ -98,6 +102,24 @@ public class FractalGUIView extends JFrame implements Observer {
 				}
 			}
 		});
+		
+		maxIterationInputField = new JTextField(50);
+		menuBar.add(maxIterationInputField);
+		maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
+		maxIterationInputField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+				controler.setMaxIterations(Integer.parseInt(maxIterationInputField.getText()));
+				} catch (NumberFormatException nfe) {
+					showErrorDialoge("Please input a number");
+				}
+				
+			}
+		});
+		
+		
 
 		add(menuBar, BorderLayout.NORTH);
 
@@ -111,7 +133,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
 		this.controler = controler;
 		setupToolbar();
-		canvas = new FractalGUICanvas(fractalData);
+		canvas = new FractalGUICanvas(fractalData,controler.getMaxIterations());
 		getContentPane().add(canvas);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION);
@@ -163,7 +185,10 @@ public class FractalGUIView extends JFrame implements Observer {
 				int rightX = leftX + Math.max(width,height);
 				int lowerY = upperY - Math.max(width,height);
 
-				controler.recentre(leftX,upperY,rightX,lowerY);
+				if(rightX > leftX && upperY > lowerY) {
+					controler.recentre(leftX,upperY,rightX,lowerY);
+				}
+				secondX = -1;
 			}
 
 			@Override
@@ -193,7 +218,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		canvas.setFactalData((int[][]) arg1);
+		canvas.setData((int[][]) arg1,controler.getMaxIterations());
 		repaint();
 
 	}
@@ -201,7 +226,10 @@ public class FractalGUIView extends JFrame implements Observer {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.drawRect(leftX,lowerY,rightX-leftX,upperY-lowerY);
+		if(secondX != -1) {
+			g.drawRect(leftX,lowerY,rightX-leftX,upperY-lowerY);
+		}
+		
 		
 	}
 

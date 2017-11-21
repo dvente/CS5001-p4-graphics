@@ -101,4 +101,19 @@ public class FractalGUIController {
 
 	}
 
+	public int getMaxIterations() {
+		return currentConfig.getMaxIterations();
+	}
+
+	public void setMaxIterations(int newMaxIterations) {
+		applyNewConfig(new FractalGUIConfig(currentConfig.getxResolution(),currentConfig.getyResolution(), 
+				currentConfig.getMinReal(), currentConfig.getMaxReal(),
+				currentConfig.getMinImaginary(), currentConfig.getMaxImaginary(),
+				newMaxIterations,
+				currentConfig.getRadiusSquared(),
+				currentConfig.getStartingColor(),
+				currentConfig.getEndColor()));
+		
+	}
+
 }

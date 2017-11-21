@@ -56,6 +56,7 @@ public class FractalGUIConfig {
         this.startingColor = startingColor;
         this.endColor = endColor;
     }
+    
 
     public double getMaxReal() {
 
