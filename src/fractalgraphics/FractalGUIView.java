@@ -3,6 +3,8 @@ package fractalgraphics;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -10,10 +12,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Stack;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 public class FractalGUIView extends JFrame implements Observer {
 
@@ -30,10 +33,12 @@ public class FractalGUIView extends JFrame implements Observer {
 
     private FractalGUICanvas canvas;
     private JMenuBar menuBar;
-    private JMenu resetButton;
-    private JMenu undoButton;
-    private JMenu redoButton;
+    private JMenuItem resetButton;
+    private JMenuItem undoButton;
+    private JMenuItem redoButton;
     private FractalGUIConfig currentConfig = defaultConfig;
+    private Stack<FractalGUIConfig> configHistory;
+    private Stack<FractalGUIConfig> configHistoryUndone;
 
     public static void main(String[] args) {
 
@@ -63,16 +68,48 @@ public class FractalGUIView extends JFrame implements Observer {
         menuBar = new JMenuBar();
         getContentPane().add(menuBar);
 
-        resetButton = new JMenu("Reset");
+        resetButton = new JMenuItem("Reset");
         menuBar.add(resetButton);
+        resetButton.addActionListener(new ActionListener() {
 
-        undoButton = new JMenu("Undo");
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                //Store config for undo
+                configHistory.push(currentConfig);
+                //reset to default
+                currentConfig = defaultConfig;
+                //update model
+                model.setCurrentConfig(defaultConfig);
+                //reset window
+                setSize(defaultConfig.getxResolution(), defaultConfig.getyResolution());
+
+            }
+        });
+
+        undoButton = new JMenuItem("Undo");
         menuBar.add(undoButton);
+        undoButton.addActionListener(new ActionListener() {
 
-        redoButton = new JMenu("Redo");
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                //Store config for undo
+                configHistory.push(currentConfig);
+                //reset to default
+                currentConfig = defaultConfig;
+                //update model
+                model.setCurrentConfig(defaultConfig);
+                //reset window
+                setSize(defaultConfig.getxResolution(), defaultConfig.getyResolution());
+
+            }
+        });
+
+        redoButton = new JMenuItem("Redo");
         menuBar.add(redoButton);
 
-        canvas.add(menuBar, BorderLayout.SOUTH);
+        add(menuBar, BorderLayout.NORTH);
 
     }
 
@@ -81,6 +118,9 @@ public class FractalGUIView extends JFrame implements Observer {
         model = new FractalGUIModel(defaultConfig);
         model.addObserver(this);
         canvas = new FractalGUICanvas(model.calcModel(defaultConfig));
+        configHistory = new Stack<FractalGUIConfig>();
+        configHistory.push(defaultConfig);
+        configHistoryUndone = new Stack<FractalGUIConfig>();
         setupToolbar();
         getContentPane().add(canvas);
         setSize(800, 800);
@@ -129,32 +169,36 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         addComponentListener(new ComponentListener() {
+
+            @Override
             public void componentResized(ComponentEvent e) {
-            	Rectangle r = getBounds();
-				model.setCurrentConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
-						currentConfig.getMaxReal(), currentConfig.getMaxImaginary(), currentConfig.getMinImaginary(),
-						currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getEndColor(), currentConfig.getEndColor()));         
+
+                Rectangle r = getBounds();
+                model.setCurrentConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
+                        currentConfig.getMaxReal(), currentConfig.getMaxImaginary(), currentConfig.getMinImaginary(),
+                        currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getEndColor(),
+                        currentConfig.getEndColor()));
             }
 
-			@Override
-			public void componentHidden(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+            @Override
+            public void componentHidden(ComponentEvent arg0) {
+                // TODO Auto-generated method stub
 
-			@Override
-			public void componentMoved(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+            }
 
-			@Override
-			public void componentShown(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+            @Override
+            public void componentMoved(ComponentEvent arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent arg0) {
+                // TODO Auto-generated method stub
+
+            }
         });
-        
+
         setVisible(true);
 
     }
@@ -162,6 +206,8 @@ public class FractalGUIView extends JFrame implements Observer {
     @Override
     public void update(Observable arg0, Object arg1) {
 
+        //future gets erased
+        //        configHistoryUndone.clear();
         canvas.setFactalData(model.calcModel());
         repaint();
 
