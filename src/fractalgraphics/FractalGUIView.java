@@ -74,15 +74,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                //Store config for undo
-                configHistory.push(currentConfig);
-                //reset to default
-                currentConfig = defaultConfig;
-                //update model
-                model.setCurrentConfig(defaultConfig);
-                //reset window
-                setSize(defaultConfig.getxResolution(), defaultConfig.getyResolution());
+            	applyNewConfig(defaultConfig);
 
             }
         });
@@ -94,23 +86,40 @@ public class FractalGUIView extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                //Store config for undo
-                configHistory.push(currentConfig);
-                //reset to default
-                currentConfig = defaultConfig;
-                //update model
-                model.setCurrentConfig(defaultConfig);
-                //reset window
-                setSize(defaultConfig.getxResolution(), defaultConfig.getyResolution());
+                configHistoryUndone.push(currentConfig);
+                applyNewConfig(configHistory.pop());
 
             }
         });
 
         redoButton = new JMenuItem("Redo");
         menuBar.add(redoButton);
+        redoButton.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                configHistory.push(currentConfig);
+                applyNewConfig(configHistoryUndone.pop());
+
+            }
+        });
+        
+        
         add(menuBar, BorderLayout.NORTH);
 
+    }
+    
+    public void applyNewConfig(FractalGUIConfig newConfig) {
+
+        //Store config for undo
+        configHistory.push(currentConfig);
+        //reset to default
+        currentConfig = newConfig;
+        //update model
+        model.setCurrentConfig(newConfig);
+        //reset window
+        setSize(newConfig.getxResolution(), newConfig.getyResolution());
     }
 
     public FractalGUIView() {
