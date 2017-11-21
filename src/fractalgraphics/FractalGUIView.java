@@ -2,6 +2,9 @@ package fractalgraphics;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -125,6 +128,33 @@ public class FractalGUIView extends JFrame implements Observer {
             }
         });
 
+        addComponentListener(new ComponentListener() {
+            public void componentResized(ComponentEvent e) {
+            	Rectangle r = getBounds();
+				model.setCurrentConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
+						currentConfig.getMaxReal(), currentConfig.getMaxImaginary(), currentConfig.getMinImaginary(),
+						currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getEndColor(), currentConfig.getEndColor()));         
+            }
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
+        
         setVisible(true);
 
     }
