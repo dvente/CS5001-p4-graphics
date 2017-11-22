@@ -88,4 +88,12 @@ public class FractalGUIConfig implements Serializable{
 
         return colorMaping;
     }
+    
+    public double getCentreReal() {
+    	return (0.5*(maxReal - minReal))+minReal;
+    }
+    
+    public double getCentreImaginary() {
+    	return (0.5*(maxImaginary - minImaginary))+minImaginary;
+    }
 }

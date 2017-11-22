@@ -25,6 +25,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import javafx.scene.input.MouseButton;
+
 public class FractalGUIView extends JFrame implements Observer {
 
 	public final static int DEFAULT_X_RESOLUTION = 800;
@@ -123,17 +125,17 @@ public class FractalGUIView extends JFrame implements Observer {
 				int returnVal = fc.showOpenDialog(fc);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-						try {
-							controler.save(file);
-						} catch (FileNotFoundException e1) {
-							showErrorDialoge("File Not Found");
-							e1.printStackTrace();
-						}  catch (IOException e1) {
-							showErrorDialoge("IOException");
-							e1.printStackTrace();
-						}
-					
-				} 
+					try {
+						controler.save(file);
+					} catch (FileNotFoundException e1) {
+						showErrorDialoge("File Not Found");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						showErrorDialoge("IOException");
+						e1.printStackTrace();
+					}
+
+				}
 			}
 		});
 
@@ -148,20 +150,20 @@ public class FractalGUIView extends JFrame implements Observer {
 				int returnVal = fc.showOpenDialog(fc);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-						try {
-							controler.load(file);
-						} catch (FileNotFoundException e1) {
-							showErrorDialoge("File Not Found");
-							e1.printStackTrace();
-						} catch (ClassNotFoundException e1) {
-							showErrorDialoge("Class not found");
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							showErrorDialoge("IOException");
-							e1.printStackTrace();
-						}
-					
-				} 
+					try {
+						controler.load(file);
+					} catch (FileNotFoundException e1) {
+						showErrorDialoge("File Not Found");
+						e1.printStackTrace();
+					} catch (ClassNotFoundException e1) {
+						showErrorDialoge("Class not found");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						showErrorDialoge("IOException");
+						e1.printStackTrace();
+					}
+
+				}
 			}
 		});
 
@@ -176,17 +178,17 @@ public class FractalGUIView extends JFrame implements Observer {
 				int returnVal = fc.showOpenDialog(fc);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-						try {
-							controler.exportToPNG(file);
-						} catch (FileNotFoundException e1) {
-							showErrorDialoge("File Not Found");
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							showErrorDialoge("IOException");
-							e1.printStackTrace();
-						}
-					
-				} 
+					try {
+						controler.exportToPNG(file);
+					} catch (FileNotFoundException e1) {
+						showErrorDialoge("File Not Found");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						showErrorDialoge("IOException");
+						e1.printStackTrace();
+					}
+
+				}
 			}
 		});
 
@@ -207,49 +209,20 @@ public class FractalGUIView extends JFrame implements Observer {
 			}
 		});
 
-		addComponentListener(new ComponentListener() {
-            public void componentResized(ComponentEvent e) {
-            	Rectangle r = getBounds();
-            	FractalGUIConfig currentConfig = controler.getCurrentConfig();
-				controler.applyNewConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
-						currentConfig.getMaxReal(), currentConfig.getMinImaginary(), currentConfig.getMaxImaginary(),
-						currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping()), true);   
-				setSize(Math.max(r.width, r.height),Math.max(r.width, r.height));
-            }
-
-			@Override
-			public void componentHidden(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void componentShown(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-        });
-        
-		
 		add(menuBar, BorderLayout.NORTH);
 
 	}
-	
-    //next function taken and addapted from https://stackoverflow.com/questions/1349220/convert-jpanel-to-image
+
+	// next function taken and addapted from
+	// https://stackoverflow.com/questions/1349220/convert-jpanel-to-image
 	public BufferedImage getBufferedImageFromCanvas() {
 
-	    int w = canvas.getWidth();
-	    int h = canvas.getHeight();
-	    BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-	    Graphics2D g = bi.createGraphics();
-	    canvas.paint(g);
-	    return bi;
+		int w = canvas.getWidth();
+		int h = canvas.getHeight();
+		BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = bi.createGraphics();
+		canvas.paint(g);
+		return bi;
 	}
 
 	public void setMaxIterationsText(int newMaxIterations) {
@@ -292,12 +265,6 @@ public class FractalGUIView extends JFrame implements Observer {
 				lowerY = upperY - width;
 				repaint();
 
-				System.out.println("FirstX: " + Integer.toString(firstX) + " FirstY: " + Integer.toString(firstY));
-				System.out.println("SecondX: " + Integer.toString(secondX) + " SecondY: " + Integer.toString(secondY));
-				System.out.println("LeftX: " + Integer.toString(leftX) + " UpperY: " + Integer.toString(upperY));
-				System.out.println("RightX: " + Integer.toString(rightX) + " LowerY: " + Integer.toString(lowerY));
-				System.out.println();
-
 			}
 		});
 
@@ -310,30 +277,36 @@ public class FractalGUIView extends JFrame implements Observer {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
 
-				secondX = e.getX();
-				secondY = e.getY();
-				int leftX = Math.min(firstX, secondX);
-				int upperY = Math.max(firstY, secondY);
+					secondX = e.getX();
+					secondY = e.getY();
+					int leftX = Math.min(firstX, secondX);
+					int upperY = Math.max(firstY, secondY);
 
-				int width = Math.abs(firstX - secondX);
-				int height = Math.abs(firstY - secondY);
+					int width = Math.abs(firstX - secondX);
+					int height = Math.abs(firstY - secondY);
 
-				int rightX = leftX + Math.max(width, height);
-				int lowerY = upperY - Math.max(width, height);
+					int rightX = leftX + Math.max(width, height);
+					int lowerY = upperY - Math.max(width, height);
 
-				if (rightX > leftX && upperY > lowerY) {
-					controler.recentre(leftX, upperY, rightX, lowerY);
+					if (rightX > leftX && upperY > lowerY) {
+						controler.recentre(leftX, upperY, rightX, lowerY);
+					}
+					secondX = -1;
 				}
-				secondX = -1;
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					firstX = e.getX();
+					firstY = e.getY();
+				}
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					controler.playZoomAnimation();
+				}
 
-				firstX = e.getX();
-				firstY = e.getY();
-				System.out.println("FirstX: " + Integer.toString(firstX) + " FirstY: " + Integer.toString(firstY));
 			}
 
 			@Override
