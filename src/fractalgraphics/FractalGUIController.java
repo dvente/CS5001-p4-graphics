@@ -195,4 +195,8 @@ public class FractalGUIController {
 		
 	}
 
+	public  FractalGUIConfig getCurrentConfig() {
+		return currentConfig;
+	}
+
 }

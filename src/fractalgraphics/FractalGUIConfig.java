@@ -38,8 +38,6 @@ public class FractalGUIConfig implements Serializable{
     public FractalGUIConfig(int xResolution, int yResolution, double minReal, double maxReal, double minImaginary,
             double maxImaginary, int maxIterations, double radiusSquared, ColorMapping colorMapping) {
         super();
-        System.out.println("maxReal: " + maxReal);
-        System.out.println("minReal: " + minReal);
         assert maxReal > minReal;
         assert maxImaginary > minImaginary;
         assert xResolution > 1;

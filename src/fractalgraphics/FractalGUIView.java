@@ -3,8 +3,11 @@ package fractalgraphics;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -204,6 +207,36 @@ public class FractalGUIView extends JFrame implements Observer {
 			}
 		});
 
+		addComponentListener(new ComponentListener() {
+            public void componentResized(ComponentEvent e) {
+            	Rectangle r = getBounds();
+            	FractalGUIConfig currentConfig = controler.getCurrentConfig();
+				controler.applyNewConfig(new FractalGUIConfig(r.width, r.height, currentConfig.getMinReal(),
+						currentConfig.getMaxReal(), currentConfig.getMinImaginary(), currentConfig.getMaxImaginary(),
+						currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping()), true);   
+				setSize(Math.max(r.width, r.height),Math.max(r.width, r.height));
+            }
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
+        
+		
 		add(menuBar, BorderLayout.NORTH);
 
 	}
