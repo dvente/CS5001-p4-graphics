@@ -11,10 +11,13 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Stack;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -34,6 +37,9 @@ public class FractalGUIView extends JFrame implements Observer {
 	private JMenuItem resetButton;
 	private JMenuItem undoButton;
 	private JMenuItem redoButton;
+	private JMenuItem saveButton;
+	private JMenuItem loadButton;
+	private JMenuItem exportButton;
 	private JTextField maxIterationInputField;
 	
 	private int firstX, firstY, secondX = -1, secondY = -1;
@@ -103,6 +109,71 @@ public class FractalGUIView extends JFrame implements Observer {
 			}
 		});
 		
+		saveButton = new JMenuItem("Save");
+		menuBar.add(saveButton);
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(fc);
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					try {
+						controler.saveConfigHistory(fc.getSelectedFile());
+					} catch (FileNotFoundException e1) {
+						showErrorDialoge("File not found");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						showErrorDialoge("IOExecption\n"  );
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		
+		loadButton = new JMenuItem("Load");
+		menuBar.add(loadButton);
+		loadButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(fc);
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					try {
+						controler.loadConfigHistory(fc.getSelectedFile());
+					} catch (FileNotFoundException e1) {
+						showErrorDialoge("File not found");
+						e1.printStackTrace();
+					} catch (ClassNotFoundException e1) {
+						showErrorDialoge("Internal error, class not found");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						showErrorDialoge("IOException");
+					}
+				}
+			}
+		});
+		
+		
+		exportButton = new JMenuItem("Export");
+		menuBar.add(exportButton);
+		exportButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(fc);
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					controler.PNGImageFromCurrentConfig(fc.getSelectedFile());
+				}
+			}
+		});
+		
 		maxIterationInputField = new JTextField(50);
 		menuBar.add(maxIterationInputField);
 		maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
@@ -140,12 +211,8 @@ public class FractalGUIView extends JFrame implements Observer {
 		
 		addMouseMotionListener(new MouseMotionListener() {
 
-
 			@Override
-			public void mouseMoved(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseMoved(MouseEvent e) {}
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -167,9 +234,7 @@ public class FractalGUIView extends JFrame implements Observer {
 		addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-
-			}
+			public void mouseClicked(MouseEvent e) {}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -200,16 +265,10 @@ public class FractalGUIView extends JFrame implements Observer {
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseEntered(MouseEvent arg0) {}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseExited(MouseEvent arg0) {}
 		});
 
 		setVisible(true);
@@ -230,6 +289,11 @@ public class FractalGUIView extends JFrame implements Observer {
 			g.drawRect(leftX,lowerY,rightX-leftX,upperY-lowerY);
 		}
 		
+		
+	}
+
+	public void setInputFieldText(int maxIterations) {
+		maxIterationInputField.setText(Integer.toString(maxIterations));
 		
 	}
 

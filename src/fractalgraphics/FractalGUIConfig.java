@@ -1,10 +1,9 @@
 package fractalgraphics;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class FractalGUIConfig {
-
-
+public class FractalGUIConfig implements Serializable {
 
     @Override
 	public String toString() {
