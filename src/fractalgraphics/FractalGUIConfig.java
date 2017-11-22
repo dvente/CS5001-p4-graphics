@@ -1,6 +1,8 @@
 package fractalgraphics;
 
-public class FractalGUIConfig {
+import java.io.Serializable;
+
+public class FractalGUIConfig implements Serializable{
 
     @Override
     public String toString() {

@@ -1,48 +1,48 @@
 package fractalgraphics;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class ColorMapping {
+public class ColorMapping implements Serializable {
 
-    private int minValue = 0;
-    private int maxValue;
-    private int lengthOfSegments;
-    private int[] valueSegmentBorders;
+    private final int minValue = 0;
+    private final int maxValue;
+    private final int lengthOfSegments;
+    private final int[] valueSegmentBorders;
+    private final Color[] colorValues;
 
-    Color[] colorValues;
-
-    public ColorMapping(int maxValue, Color[] colorValues) {
-        this.maxValue = maxValue;
+	public ColorMapping(int maxValue, Color[] colorValues) {
         this.colorValues = colorValues;
+        this.maxValue = maxValue;
         lengthOfSegments = maxValue / (colorValues.length - 1);
         valueSegmentBorders = new int[colorValues.length + 1];
         for (int i = 0; i < valueSegmentBorders.length; i++) {
             valueSegmentBorders[i] = i * lengthOfSegments;
         }
+        
+        
     }
 
     public ColorMapping() {
         this.maxValue = MandelbrotCalculator.INITIAL_MAX_ITERATIONS;
         colorValues = new Color[] { Color.WHITE, Color.BLACK };
         lengthOfSegments = maxValue / (colorValues.length - 1);
+        valueSegmentBorders = new int[colorValues.length + 1];
+        for (int i = 0; i < valueSegmentBorders.length; i++) {
+            valueSegmentBorders[i] = i * lengthOfSegments;
+        }
     }
+    
+    public Color[] getColorValues() {
+		return colorValues;
+	}
 
     @Override
     public String toString() {
 
         return "ColorMapping [minValue=" + minValue + ", maxValue=" + maxValue + ", colorValues="
                 + Arrays.toString(colorValues) + "]";
-    }
-
-    public int getMaxValue() {
-
-        return maxValue;
-    }
-
-    public void setMaxValue(int maxValue) {
-
-        this.maxValue = maxValue;
     }
 
     public Color interpolateColors(Color first, Color second, float p) {
@@ -90,10 +90,6 @@ public class ColorMapping {
                 return colorValues[colorValues.length - 1];
             } else {
                 int index = getSortedIndex(valueSegmentBorders, value);
-                //                System.out.println(Arrays.toString(valueSegmentBorders));
-                //                System.out.println(value);
-                //                System.out.println(index);
-                //                System.out.println();
 
                 float percentage = ((float) value) / (index * (lengthOfSegments + 1));
                 //                return interpolateColors(colorValues[index], colorValues[index + 1], Smoothstep(0, 1, percentage));
