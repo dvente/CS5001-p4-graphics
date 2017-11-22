@@ -3,6 +3,7 @@ package fractalgraphics;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +12,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Observable;
@@ -169,7 +171,12 @@ public class FractalGUIView extends JFrame implements Observer {
 				JFileChooser fc = new JFileChooser();
 				int returnVal = fc.showOpenDialog(fc);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					controler.PNGImageFromCurrentConfig(fc.getSelectedFile());
+					try {
+						controler.PNGImageFromCurrentConfig(fc.getSelectedFile());
+					} catch (IOException e1) {
+						showErrorDialoge("IOException");
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -294,6 +301,18 @@ public class FractalGUIView extends JFrame implements Observer {
 
 	public void setInputFieldText(int maxIterations) {
 		maxIterationInputField.setText(Integer.toString(maxIterations));
+		
+	}
+	
+	//following function taken and addapted from https://stackoverflow.com/questions/1349220/convert-jpanel-to-image
+	public BufferedImage getBufferedImageOfCanvas() {
+		
+	    int w = canvas.getWidth();
+	    int h = canvas.getHeight();
+	    BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+	    Graphics2D g = bi.createGraphics();
+	    canvas.paint(g);
+	    return bi;
 		
 	}
 

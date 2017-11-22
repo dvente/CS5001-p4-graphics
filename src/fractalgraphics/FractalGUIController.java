@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Stack;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 public class FractalGUIController {
@@ -150,8 +151,8 @@ public class FractalGUIController {
 		
 	}
 
-	public void PNGImageFromCurrentConfig(File selectedFile) {
-		// TODO Auto-generated method stub
+	public void PNGImageFromCurrentConfig(File selectedFile) throws IOException {
+		ImageIO.write(view.getBufferedImageOfCanvas(),"png",selectedFile);
 		
 	}
 
