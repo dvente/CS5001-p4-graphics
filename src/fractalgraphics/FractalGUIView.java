@@ -11,6 +11,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +53,8 @@ public class FractalGUIView extends JFrame implements Observer {
 
     private int currentXSize = DEFAULT_X_RESOLUTION;
     private int curretnYSize = DEFAULT_Y_RESOLUTION;
+
+    private double zoomInFactor = 1.2;
 
     public int getCurrentXSize() {
 
@@ -215,6 +219,18 @@ public class FractalGUIView extends JFrame implements Observer {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     controler.applyNextColorMapping();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    controler.applyTranslateScreen(0, 1);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    controler.applyTranslateScreen(0, -1);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    controler.applyTranslateScreen(1, 0);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    controler.applyTranslateScreen(-1, 0);
+                }
 
             }
 
@@ -278,14 +294,22 @@ public class FractalGUIView extends JFrame implements Observer {
 
                 secondX = e.getX();
                 secondY = e.getY();
-                leftX = Math.min(firstX, secondX);
-                upperY = Math.max(firstY, secondY);
 
-                int width = Math.abs(firstX - secondX);
-
-                rightX = leftX + width;
-                lowerY = upperY - width;
+                controler.applyTranslateScreen(-1 * Math.abs(firstX - secondX), Math.abs(firstY - secondY));
                 repaint();
+
+            }
+        });
+
+        addMouseWheelListener(new MouseWheelListener() {
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+
+                int wheelRotationClicks = e.getWheelRotation();
+                if (wheelRotationClicks < 0) {
+                    controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
+                }
 
             }
         });
@@ -313,8 +337,8 @@ public class FractalGUIView extends JFrame implements Observer {
                     //
                     //                    if (rightX > leftX && upperY > lowerY) {
 
-                    controler.applyRecentre(Math.min(firstX, secondX), Math.max(firstY, secondY),
-                            Math.max(firstX, secondX), Math.min(firstY, secondY));
+                    //                    controler.applyRecentre(Math.min(firstX, secondX), Math.max(firstY, secondY),
+                    //                            Math.max(firstX, secondX), Math.min(firstY, secondY));
                     //                    }
                     //                    secondX = -1;
                 }

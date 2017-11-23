@@ -203,7 +203,16 @@ public class FractalGUIController {
 
     }
 
-    public FractalGUIConfig translate(int real, int im) {
+    public void applyTranslateScreen(int x, int y) {
+
+        double realRange = currentConfig.getMaxReal() - currentConfig.getMinReal();
+        double imaginaryRange = currentConfig.getMaxImaginary() - currentConfig.getMinImaginary();
+
+        applyTranslate(0.001 * x * realRange, 0.001 * y * imaginaryRange);
+
+    }
+
+    public FractalGUIConfig translate(double real, double im) {
 
         return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), currentConfig.getMinReal() - real,
                 currentConfig.getMaxReal() - real, currentConfig.getMinImaginary() - im,
@@ -212,7 +221,7 @@ public class FractalGUIController {
 
     }
 
-    public void applyTranslate(int real, int im) {
+    public void applyTranslate(double real, double im) {
 
         applyNewConfig(translate(real, im), true);
 
@@ -238,23 +247,22 @@ public class FractalGUIController {
 
     }
 
-    public FractalGUIConfig centreScale(FractalGUIConfig config, float factor) {
+    public FractalGUIConfig centreScale(FractalGUIConfig config, double d) {
 
-        assert factor > 0;
+        assert d > 0;
         double width = config.getMaxReal() - config.getMinReal();
         double height = config.getMaxImaginary() - config.getMinImaginary();
 
         return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(),
-                (config.getCentreReal() - (width * 0.5 * factor)), (config.getCentreReal() + (width * 0.5 * factor)),
-                (config.getCentreImaginary() - (height * 0.5 * factor)),
-                (config.getCentreImaginary() + (height * 0.5 * factor)), config.getMaxIterations(),
-                config.getRadiusSquared(), config.getColorMapping());
+                (config.getCentreReal() - (width * 0.5 * d)), (config.getCentreReal() + (width * 0.5 * d)),
+                (config.getCentreImaginary() - (height * 0.5 * d)), (config.getCentreImaginary() + (height * 0.5 * d)),
+                config.getMaxIterations(), config.getRadiusSquared(), config.getColorMapping());
 
     }
 
-    public void applyCentreScale(float factor) {
+    public void applyCentreScale(double d) {
 
-        applyNewConfig(centreScale(currentConfig, factor), true);
+        applyNewConfig(centreScale(currentConfig, d), true);
 
     }
 
