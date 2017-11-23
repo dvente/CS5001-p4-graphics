@@ -1,3 +1,6 @@
+/*
+ *
+ */
 package fractalgraphics;
 
 import java.awt.Color;
@@ -18,43 +21,87 @@ import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
+/**
+ * The Class FractalGUIController.
+ *
+ * @author 170008773
+ */
 public class FractalGUIController {
 
-    private final FractalGUIConfig defaultConfig;
+    private static final double HALF_FACTOR = 0.5;
 
-    private final FractalGUIModel model;
-    private final FractalGUIView view;
-    private FractalGUIConfig currentConfig;
-    private Stack<FractalGUIConfig> configHistory;
-    private Stack<FractalGUIConfig> configUndoneHistory;
-    private List<FractalGUIConfig> animationHistory;
-    private final int frameRate = 24;
-    private final List<Color[]> colorMappingValues = new ArrayList<Color[]>();
-    private int currentColorMappingIndex = 0;
-    private Timer animationTimer;
+    private static final Color ALMOST_BLACK = new Color(0, 2, 0);
 
+    private static final Color GOLD = new Color(237, 255, 255);
+
+    private static final Color DARK_BLUE = new Color(0, 7, 100);
+
+    private static final Color DARK_YELLOW = new Color(255, 170, 0);
+
+    private static final Color DARK_GREEN = new Color(0, 131, 31);
+
+    private static final Color LIGHT_BLUE = new Color(32, 107, 203);
+
+    private static final int MILLISECONDS_IN_SECONDS = 1000;
+
+    private static final float ANIMATION_ZOOM_FACTOR = 0.9f;
+
+    private static final Color DARK_RED = new Color(191, 0, 0);
+
+    /**
+     * The main method.
+     *
+     * @param args
+     *            the arguments
+     */
     public static void main(String[] args) {
 
         new FractalGUIController();
     }
 
+    /** The default config. */
+    private final FractalGUIConfig defaultConfig;
+
+    /** The model. */
+    private final FractalGUIModel model;
+
+    /** The view. */
+    private final FractalGUIView view;
+
+    /** The current config. */
+    private FractalGUIConfig currentConfig;
+
+    /** The config history. */
+    private Stack<FractalGUIConfig> configHistory;
+
+    /** The config undone history. */
+    private Stack<FractalGUIConfig> configUndoneHistory;
+
+    /** The animation history. */
+    private List<FractalGUIConfig> animationHistory;
+
+    /** The frame rate. */
+    private final int frameRate = 240;
+
+    /** The color mapping values. */
+    private final List<Color[]> colorMappingValues = new ArrayList<Color[]>();
+
+    /** The current color mapping index. */
+    private int currentColorMappingIndex = 0;
+
+    /** The animation timer. */
+    private Timer animationTimer;
+
+    /**
+     * Instantiates a new fractal GUI controller.
+     */
     public FractalGUIController() {
-        colorMappingValues.add(new Color[] { Color.WHITE, Color.BLACK });
-        colorMappingValues.add(new Color[] { Color.WHITE, new Color(191, 0, 0), Color.BLACK });
-        colorMappingValues.add(new Color[] { Color.WHITE, new Color(32, 107, 203), Color.BLACK });
-        colorMappingValues.add(new Color[] { Color.WHITE, new Color(0, 131, 31), Color.BLACK });
-        colorMappingValues.add(new Color[] {
-                Color.WHITE,
-                new Color(255, 170, 0),
-                new Color(191, 0, 0),
-                new Color(0, 131, 31),
-                Color.BLACK });
-        colorMappingValues.add(new Color[] {
-                new Color(0, 7, 100),
-                new Color(32, 107, 203),
-                new Color(237, 255, 255),
-                new Color(255, 170, 0),
-                new Color(0, 2, 0) });
+        colorMappingValues.add(new Color[] {Color.WHITE, Color.BLACK });
+        colorMappingValues.add(new Color[] {Color.WHITE, DARK_RED, Color.BLACK });
+        colorMappingValues.add(new Color[] {Color.WHITE, LIGHT_BLUE, Color.BLACK });
+        colorMappingValues.add(new Color[] {Color.WHITE, DARK_GREEN, Color.BLACK });
+        colorMappingValues.add(new Color[] {Color.WHITE, DARK_YELLOW, DARK_RED, DARK_GREEN, Color.BLACK });
+        colorMappingValues.add(new Color[] {DARK_BLUE, LIGHT_BLUE, GOLD, DARK_YELLOW, ALMOST_BLACK });
         defaultConfig = new FractalGUIConfig(FractalGUIView.DEFAULT_X_RESOLUTION, FractalGUIView.DEFAULT_Y_RESOLUTION,
                 MandelbrotCalculator.INITIAL_MIN_REAL, MandelbrotCalculator.INITIAL_MAX_REAL,
                 MandelbrotCalculator.INITIAL_MIN_IMAGINARY, MandelbrotCalculator.INITIAL_MAX_IMAGINARY,
@@ -70,13 +117,12 @@ public class FractalGUIController {
         configHistory = new Stack<FractalGUIConfig>();
         configUndoneHistory = new Stack<FractalGUIConfig>();
         animationHistory = new LinkedList<FractalGUIConfig>();
-        animationTimer = new Timer(1000 / (frameRate * 10), new ActionListener() {
+        animationTimer = new Timer(MILLISECONDS_IN_SECONDS / (frameRate), new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                applyNewConfig(centreScale(currentConfig, 0.9f), false);
-                //                setMaxIterations(currentConfig.getMaxIterations() + 5);
+                applyNewConfig(centreScale(currentConfig, ANIMATION_ZOOM_FACTOR), false);
                 animationHistory.add(currentConfig);
                 view.repaint();
             }
@@ -85,108 +131,26 @@ public class FractalGUIController {
 
     }
 
-    public void toggleAnimation() {
+    /**
+     * Apply centre scale.
+     *
+     * @param d
+     *            the d
+     */
+    public void applyCentreScale(double d) {
 
-        if (animationTimer.isRunning()) {
-            animationTimer.stop();
-            applyNewConfig(currentConfig, true);
-        } else {
-            animationHistory.clear();
-            animationTimer.start();
-        }
-
-    }
-
-    public void applyNextColorMapping() {
-
-        currentColorMappingIndex = (currentColorMappingIndex + 1) % colorMappingValues.size();
-        ColorMapping newColorMapping = new ColorMapping(currentConfig.getMaxIterations(),
-                colorMappingValues.get(currentColorMappingIndex));
-
-        applyNewConfig(new FractalGUIConfig(currentConfig.getxResolution(), currentConfig.getyResolution(),
-                currentConfig.getMinReal(), currentConfig.getMaxReal(), currentConfig.getMinImaginary(),
-                currentConfig.getMaxImaginary(), currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(),
-                newColorMapping), true);
+        applyNewConfig(centreScale(currentConfig, d), true);
 
     }
 
-    public boolean hasConfigHistory() {
-
-        return !configHistory.isEmpty();
-    }
-
-    public boolean hasConfigUndoneHistory() {
-
-        return configHistory != null && !configUndoneHistory.isEmpty();
-    }
-
-    public double realFromScreenX(int x) {
-
-        return currentConfig.getMinReal()
-                + (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
-    }
-
-    public double imaginaryFromScreenY(int y) {
-
-        return currentConfig.getMinImaginary()
-                + ((y * (currentConfig.getMaxImaginary() - currentConfig.getMinImaginary()))
-                        / currentConfig.getxResolution());
-    }
-
-    public int screenYFromImaginary(double im) {
-
-        return (int) Math.round((currentConfig.getyResolution() * (im - currentConfig.getMinImaginary()))
-                / (currentConfig.getMaxImaginary() - currentConfig.getMinImaginary()));
-    }
-
-    public int screenXFromReal(double real) {
-
-        return (int) Math.round((currentConfig.getxResolution() * (real - currentConfig.getMinReal()))
-                / (currentConfig.getMaxReal() - currentConfig.getMinReal()));
-    }
-
-    public void reset() {
-
-        applyNewConfig(defaultConfig, true);
-
-    }
-
-    public void redo() {
-
-        configHistory.push(currentConfig);
-        applyNewConfig(configUndoneHistory.pop(), false);
-
-    }
-
-    public void undo() {
-
-        configUndoneHistory.push(currentConfig);
-        applyNewConfig(configHistory.pop(), false);
-
-    }
-
-    public void save(File file) throws FileNotFoundException, IOException {
-
-        try (FileOutputStream fos = new FileOutputStream(file); ObjectOutputStream oos = new ObjectOutputStream(fos);) {
-            oos.writeObject(currentConfig);
-            oos.writeObject(configHistory);
-            oos.writeObject(configUndoneHistory);
-
-        }
-
-    }
-
-    public void load(File file) throws FileNotFoundException, IOException, ClassNotFoundException {
-
-        try (FileInputStream fis = new FileInputStream(file); ObjectInputStream ois = new ObjectInputStream(fis);) {
-            currentConfig = (FractalGUIConfig) ois.readObject();
-            configHistory = (Stack<FractalGUIConfig>) ois.readObject();
-            configUndoneHistory = (Stack<FractalGUIConfig>) ois.readObject();
-            applyNewConfig(currentConfig, false);
-        }
-
-    }
-
+    /**
+     * Apply new config.
+     *
+     * @param newConfig
+     *            the new config
+     * @param record
+     *            the record
+     */
     public void applyNewConfig(FractalGUIConfig newConfig, boolean record) {
 
         // Store config for undo
@@ -204,52 +168,62 @@ public class FractalGUIController {
 
     }
 
-    public void applyTranslateScreen(int x, int y) {
+    /**
+     * Apply next color mapping.
+     */
+    public void applyNextColorMapping() {
 
-        double realRange = currentConfig.getMaxReal() - currentConfig.getMinReal();
-        double imaginaryRange = currentConfig.getMaxImaginary() - currentConfig.getMinImaginary();
-        System.out.println(x);
-        System.out.println(y);
-        applyTranslate(x * realRange / currentConfig.getxResolution(),
-                y * imaginaryRange / currentConfig.getyResolution());
+        currentColorMappingIndex = (currentColorMappingIndex + 1) % colorMappingValues.size();
+        ColorMapping newColorMapping = new ColorMapping(currentConfig.getMaxIterations(),
+                colorMappingValues.get(currentColorMappingIndex));
 
-    }
-
-    public FractalGUIConfig translate(double real, double im) {
-
-        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), currentConfig.getMinReal() - real,
-                currentConfig.getMaxReal() - real, currentConfig.getMinImaginary() - im,
-                currentConfig.getMaxImaginary() - im, currentConfig.getMaxIterations(),
-                currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
+        applyNewConfig(new FractalGUIConfig(currentConfig.getxResolution(), currentConfig.getyResolution(),
+                currentConfig.getMinReal(), currentConfig.getMaxReal(), currentConfig.getMinImaginary(),
+                currentConfig.getMaxImaginary(), currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(),
+                newColorMapping), true);
 
     }
 
+    /**
+     * Apply translate.
+     *
+     * @param real
+     *            the real
+     * @param im
+     *            the im
+     */
     public void applyTranslate(double real, double im) {
 
         applyNewConfig(translate(real, im), true);
 
     }
 
-    public FractalGUIConfig recentre(int leftX, int upperY, int rightX, int lowerY) {
+    /**
+     * Apply translate screen.
+     *
+     * @param x
+     *            the x
+     * @param y
+     *            the y
+     */
+    public void applyTranslateScreen(int x, int y) {
 
-        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), realFromScreenX(leftX),
-                realFromScreenX(rightX), imaginaryFromScreenY(lowerY), imaginaryFromScreenY(upperY),
-                currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
-
-    }
-
-    public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
-
-        assert leftX < rightX;
-        assert upperY > lowerY;
-        assert screenXFromReal(realFromScreenX(leftX)) == leftX;
-        assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
-        assert screenXFromReal(realFromScreenX(rightX)) == rightX;
-        assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
-        applyNewConfig(recentre(leftX, upperY, rightX, lowerY), true);
+        double realRange = currentConfig.getMaxReal() - currentConfig.getMinReal();
+        double imaginaryRange = currentConfig.getMaxImaginary() - currentConfig.getMinImaginary();
+        applyTranslate(x * realRange / currentConfig.getxResolution(),
+                y * imaginaryRange / currentConfig.getyResolution());
 
     }
 
+    /**
+     * Centre scale.
+     *
+     * @param config
+     *            the config
+     * @param d
+     *            the d
+     * @return the fractal GUI config
+     */
     public FractalGUIConfig centreScale(FractalGUIConfig config, double d) {
 
         assert d > 0;
@@ -257,23 +231,219 @@ public class FractalGUIController {
         double height = config.getMaxImaginary() - config.getMinImaginary();
 
         return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(),
-                (config.getCentreReal() - (width * 0.5 * d)), (config.getCentreReal() + (width * 0.5 * d)),
-                (config.getCentreImaginary() - (height * 0.5 * d)), (config.getCentreImaginary() + (height * 0.5 * d)),
-                config.getMaxIterations(), config.getRadiusSquared(), config.getColorMapping());
+                (config.getCentreReal() - (width * HALF_FACTOR * d)),
+                (config.getCentreReal() + (width * HALF_FACTOR * d)),
+                (config.getCentreImaginary() - (height * HALF_FACTOR * d)),
+                (config.getCentreImaginary() + (height * HALF_FACTOR * d)), config.getMaxIterations(),
+                config.getRadiusSquared(), config.getColorMapping());
 
     }
 
-    public void applyCentreScale(double d) {
+    /**
+     * Export to PNG.
+     *
+     * @param file
+     *            the file
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    public void exportToPNG(File file) throws IOException {
 
-        applyNewConfig(centreScale(currentConfig, d), true);
+        ImageIO.write(view.getBufferedImageFromCanvas(), "png", file);
 
     }
 
+    /**
+     * Gets the color mapping.
+     *
+     * @return the color mapping
+     */
+    public ColorMapping getColorMapping() {
+
+        return currentConfig.getColorMapping();
+    }
+
+    /**
+     * Gets the current config.
+     *
+     * @return the current config
+     */
+    public FractalGUIConfig getCurrentConfig() {
+
+        return currentConfig;
+    }
+
+    /**
+     * Gets the max iterations.
+     *
+     * @return the max iterations
+     */
     public int getMaxIterations() {
 
         return currentConfig.getMaxIterations();
     }
 
+    /**
+     * Checks for config history.
+     *
+     * @return true, if successful
+     */
+    public boolean hasConfigHistory() {
+
+        return !configHistory.isEmpty();
+    }
+
+    /**
+     * Checks for config undone history.
+     *
+     * @return true, if successful
+     */
+    public boolean hasConfigUndoneHistory() {
+
+        return configHistory != null && !configUndoneHistory.isEmpty();
+    }
+
+    /**
+     * Converst a screen y coordinate to the corresponding imaginary coordinate.
+     *
+     * @param y
+     *            the y
+     * @return the corresponding y coordinate
+     */
+    public double imaginaryFromScreenY(int y) {
+
+        return currentConfig.getMinImaginary()
+                + ((y * (currentConfig.getMaxImaginary() - currentConfig.getMinImaginary()))
+                        / currentConfig.getxResolution());
+    }
+
+    /**
+     * Load.
+     *
+     * @param file
+     *            the file
+     * @throws FileNotFoundException
+     *             the file not found exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     *             the class not found exception
+     */
+    public void load(File file) throws FileNotFoundException, IOException, ClassNotFoundException {
+
+        try (FileInputStream fis = new FileInputStream(file); ObjectInputStream ois = new ObjectInputStream(fis);) {
+            currentConfig = (FractalGUIConfig) ois.readObject();
+            configHistory = (Stack<FractalGUIConfig>) ois.readObject();
+            configUndoneHistory = (Stack<FractalGUIConfig>) ois.readObject();
+            applyNewConfig(currentConfig, false);
+        }
+
+    }
+
+    /**
+     * Converts a screen x coordinate to the corresponding real coordinate.
+     *
+     * @param x
+     *            the x
+     * @return the corresponding Real Coordinate
+     */
+    //    public double realFromScreenX(int x) {
+    //
+    //        return currentConfig.getMinReal()
+    //                + (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
+    //    }
+
+    /**
+     * Recentre.
+     *
+     * @param leftX
+     *            the left X
+     * @param upperY
+     *            the upper Y
+     * @param rightX
+     *            the right X
+     * @param lowerY
+     *            the lower Y
+     * @return the fractal GUI config
+     */
+    //    public FractalGUIConfig recentre(int leftX, int upperY, int rightX, int lowerY) {
+    //
+    //        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), realFromScreenX(leftX),
+    //                realFromScreenX(rightX), imaginaryFromScreenY(lowerY), imaginaryFromScreenY(upperY),
+    //                currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
+    //
+    //    }
+
+    //    /**
+    //     * Apply recentre.
+    //     *
+    //     * @param leftX
+    //     *            the left X
+    //     * @param upperY
+    //     *            the upper Y
+    //     * @param rightX
+    //     *            the right X
+    //     * @param lowerY
+    //     *            the lower Y
+    //     */
+    //    public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
+    //
+    //        //        assert leftX < rightX;
+    //        //        assert upperY > lowerY;
+    //        //        assert screenXFromReal(realFromScreenX(leftX)) == leftX;
+    //        //        assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
+    //        //        assert screenXFromReal(realFromScreenX(rightX)) == rightX;
+    //        //        assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
+    //        applyNewConfig(recentre(leftX, upperY, rightX, lowerY), true);
+    //
+    //    }
+
+    /**
+     * Redo reaply the most recently undone configuration.
+     */
+    public void redo() {
+
+        configHistory.push(currentConfig);
+        applyNewConfig(configUndoneHistory.pop(), false);
+
+    }
+
+    /**
+     * Reset to the default configuration.
+     */
+    public void reset() {
+
+        applyNewConfig(defaultConfig, true);
+
+    }
+
+    /**
+     * Save the current configuration to a file.
+     *
+     * @param file
+     *            the file
+     * @throws FileNotFoundException
+     *             the file not found exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    public void save(File file) throws FileNotFoundException, IOException {
+
+        try (FileOutputStream fos = new FileOutputStream(file); ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+            oos.writeObject(currentConfig);
+            oos.writeObject(configHistory);
+            oos.writeObject(configUndoneHistory);
+
+        }
+
+    }
+
+    /**
+     * Sets the max iterations.
+     *
+     * @param newMaxIterations
+     *            the new max iterations
+     */
     public void setMaxIterations(int newMaxIterations) {
 
         ColorMapping newColorMapping = new ColorMapping(newMaxIterations,
@@ -286,20 +456,47 @@ public class FractalGUIController {
 
     }
 
-    public ColorMapping getColorMapping() {
+    /**
+     * Toggle zoom animation.
+     */
+    public void toggleAnimation() {
 
-        return currentConfig.getColorMapping();
+        if (animationTimer.isRunning()) {
+            animationTimer.stop();
+            applyNewConfig(currentConfig, true);
+        } else {
+            animationHistory.clear();
+            animationTimer.start();
+        }
+
     }
 
-    public void exportToPNG(File file) throws IOException {
+    /**
+     * Translate.
+     *
+     * @param real
+     *            the real
+     * @param im
+     *            the im
+     * @return the fractal GUI config
+     */
+    public FractalGUIConfig translate(double real, double im) {
 
-        ImageIO.write(view.getBufferedImageFromCanvas(), "png", file);
+        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), currentConfig.getMinReal() - real,
+                currentConfig.getMaxReal() - real, currentConfig.getMinImaginary() - im,
+                currentConfig.getMaxImaginary() - im, currentConfig.getMaxIterations(),
+                currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
 
     }
 
-    public FractalGUIConfig getCurrentConfig() {
+    /**
+     * revert to the previous configuration.
+     */
+    public void undo() {
 
-        return currentConfig;
+        configUndoneHistory.push(currentConfig);
+        applyNewConfig(configHistory.pop(), false);
+
     }
 
 }

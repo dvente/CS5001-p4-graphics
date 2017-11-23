@@ -1,7 +1,9 @@
+/*
+ *
+ */
 package fractalgraphics;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -28,49 +30,209 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+/**
+ * The Class FractalGUIView.
+ *
+ * @author 170008773
+ */
 public class FractalGUIView extends JFrame implements Observer {
 
-    public final static int DEFAULT_X_RESOLUTION = 800;
-    public final static int DEFAULT_Y_RESOLUTION = 800;
+    private static final int MENU_BAR_HEIGHT = 2;
 
+    private static final int MENU_BAR_WIDTH = 6;
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -4501449361859666201L;
+
+    /** The Constant DEFAULT_X_RESOLUTION. */
+    public static final int DEFAULT_X_RESOLUTION = 800;
+
+    /** The Constant DEFAULT_Y_RESOLUTION. */
+    public static final int DEFAULT_Y_RESOLUTION = 800;
+
+    /** The controler. */
     private FractalGUIController controler;
+
+    /** The canvas. */
     private FractalGUICanvas canvas;
+
+    /** The menu bar. */
     private JMenuBar menuBar;
+
+    /** The reset button. */
     private JMenuItem resetButton;
+
+    /** The undo button. */
     private JMenuItem undoButton;
+
+    /** The redo button. */
     private JMenuItem redoButton;
+
+    /** The save button. */
     private JMenuItem saveButton;
+
+    /** The load button. */
     private JMenuItem loadButton;
+
+    /** The export to PNG button. */
     private JMenuItem exportToPNGButton;
 
+    /** The max iteration input field. */
     private JTextField maxIterationInputField;
 
+    /** The second Y. */
     private int firstX, firstY, secondX = -1, secondY = -1;
 
-    //    private int leftX;
-    //    private int upperY;
-    //    private int rightX;
-    //    private int lowerY;
+    /** The zoom in factor. */
+    private final double zoomInFactor = 1.2;
 
-    private int currentXSize = DEFAULT_X_RESOLUTION;
-    private int curretnYSize = DEFAULT_Y_RESOLUTION;
+    /**
+     * Instantiates a new fractal GUI view.
+     *
+     * @param controler
+     *            the controler
+     * @param fractalData
+     *            the fractal data
+     */
+    public FractalGUIView(FractalGUIController controler, int[][] fractalData) {
 
-    private double zoomInFactor = 1.2;
+        this.controler = controler;
+        setupToolbar();
+        canvas = new FractalGUICanvas(fractalData, controler.getColorMapping());
+        getContentPane().add(canvas);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION);
 
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+
+                firstX = secondX;
+                firstY = secondY;
+                secondX = e.getX();
+                secondY = e.getY();
+
+                controler.applyTranslateScreen(-1 * (firstX - secondX), -1 * (firstY - secondY));
+                repaint();
+
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+
+                firstX = secondX;
+                firstY = secondY;
+                secondX = e.getX();
+                secondY = e.getY();
+
+            }
+        });
+
+        addMouseWheelListener(new MouseWheelListener() {
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+
+                int wheelRotationClicks = e.getWheelRotation();
+                if (wheelRotationClicks < 0) {
+                    controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
+                }
+
+            }
+        });
+
+        addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent arg0) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    controler.toggleAnimation();
+                }
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+        });
+
+        setVisible(true);
+
+    }
+
+    // next function taken and addapted from
+    // https://stackoverflow.com/questions/1349220/convert-jpanel-to-image
+    /**
+     * Gets the buffered image from canvas.
+     *
+     * @return the buffered image from canvas
+     */
+    public BufferedImage getBufferedImageFromCanvas() {
+
+        int w = canvas.getWidth();
+        int h = canvas.getHeight();
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bi.createGraphics();
+        canvas.paint(g);
+        return bi;
+    }
+
+    /**
+     * Gets the current X size.
+     *
+     * @return the current X size
+     */
     public int getCurrentXSize() {
 
         return DEFAULT_X_RESOLUTION;
     }
 
+    /**
+     * Gets the current Y size.
+     *
+     * @return the current Y size
+     */
     public int getCurrentYSize() {
 
         return DEFAULT_Y_RESOLUTION;
     }
 
+    /**
+     * Sets the max iterations text.
+     *
+     * @param newMaxIterations
+     *            the new max iterations text
+     */
+    public void setMaxIterationsText(int newMaxIterations) {
+
+        maxIterationInputField.setText(Integer.toString(newMaxIterations));
+    }
+
+    /**
+     * Setup toolbar.
+     */
     private void setupToolbar() {
 
         menuBar = new JMenuBar();
-        menuBar.setLayout(new GridLayout(2, 6));
+        menuBar.setLayout(new GridLayout(MENU_BAR_HEIGHT, MENU_BAR_WIDTH));
         getContentPane().add(menuBar);
 
         resetButton = new JMenuItem("Reset");
@@ -199,7 +361,6 @@ public class FractalGUIView extends JFrame implements Observer {
 
         maxIterationInputField = new JTextField(controler.getMaxIterations());
         menuBar.add(maxIterationInputField, BorderLayout.EAST);
-        maxIterationInputField.setSize(new Dimension(20, 20));
         maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
         maxIterationInputField.addActionListener(new ActionListener() {
 
@@ -215,6 +376,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
             }
         });
+
         maxIterationInputField.addKeyListener(new KeyListener() {
 
             @Override
@@ -240,7 +402,6 @@ public class FractalGUIView extends JFrame implements Observer {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
 
             }
 
@@ -254,134 +415,15 @@ public class FractalGUIView extends JFrame implements Observer {
 
     }
 
-    // next function taken and addapted from
-    // https://stackoverflow.com/questions/1349220/convert-jpanel-to-image
-    public BufferedImage getBufferedImageFromCanvas() {
-
-        int w = canvas.getWidth();
-        int h = canvas.getHeight();
-        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bi.createGraphics();
-        canvas.paint(g);
-        return bi;
-    }
-
-    public void setMaxIterationsText(int newMaxIterations) {
-
-        maxIterationInputField.setText(Integer.toString(newMaxIterations));
-    }
-
+    /**
+     * Show error dialoge.
+     *
+     * @param message
+     *            the message
+     */
     public void showErrorDialoge(String message) {
 
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    public FractalGUIView(FractalGUIController controler, int[][] fractalData) {
-
-        this.controler = controler;
-        setupToolbar();
-        canvas = new FractalGUICanvas(fractalData, controler.getColorMapping());
-        getContentPane().add(canvas);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION);
-
-        addMouseMotionListener(new MouseMotionListener() {
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-
-                firstX = secondX;
-                firstY = secondY;
-                secondX = e.getX();
-                secondY = e.getY();
-
-            }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-
-                firstX = secondX;
-                firstY = secondY;
-                secondX = e.getX();
-                secondY = e.getY();
-
-                controler.applyTranslateScreen(-1 * (firstX - secondX), -1 * (firstY - secondY));
-                repaint();
-
-            }
-        });
-
-        addMouseWheelListener(new MouseWheelListener() {
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-
-                int wheelRotationClicks = e.getWheelRotation();
-                if (wheelRotationClicks < 0) {
-                    controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
-                }
-
-            }
-        });
-
-        addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-
-                    //                    int leftX = Math.min(firstX, secondX);
-                    //                    int upperY = Math.max(firstY, secondY);
-                    //
-                    //                    int width = Math.abs(firstX - secondX);
-                    //                    int height = Math.abs(firstY - secondY);
-                    //
-                    //                    int rightX = leftX + Math.max(width, height);
-                    //                    int lowerY = upperY - Math.max(width, height);
-                    //
-                    //                    if (rightX > leftX && upperY > lowerY) {
-
-                    //                    controler.applyRecentre(Math.min(firstX, secondX), Math.max(firstY, secondY),
-                    //                            Math.max(firstX, secondX), Math.min(firstY, secondY));
-                    //                    }
-                    //                    secondX = -1;
-                }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    //                    firstX = e.getX();
-                    //                    firstY = e.getY();
-                }
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    controler.toggleAnimation();
-                }
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        setVisible(true);
-
     }
 
     @Override
@@ -391,16 +433,4 @@ public class FractalGUIView extends JFrame implements Observer {
         repaint();
 
     }
-
-    //    @Override
-    //    public void paint(Graphics g) {
-    //
-    //        super.paint(g);
-    //        if (secondX != -1) {
-    //            g.setColor(Color.white);
-    //            g.drawRect(firstX, upperY, rightX - leftX, upperY - lowerY);
-    //        }
-    //
-    //    }
-
 }
