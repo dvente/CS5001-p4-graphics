@@ -13,7 +13,6 @@ public class FractalGUICanvas extends JPanel {
     }
 
     private int[][] fractalData;
-    //    private int maxIterations;
     private ColorMapping colorMapping;
 
     public void setData(int[][] factalData, ColorMapping colorMapping) {
@@ -30,17 +29,6 @@ public class FractalGUICanvas extends JPanel {
                 g.setColor(colorMapping.getColorFromValue(fractalData[i][j]));
                 g.drawLine(j, i, j, i);
             }
-        }
-
-    }
-
-    public void printMandelbrotData() {
-
-        for (int i = 0; i < fractalData.length; i++) {
-            for (int j = 0; j < fractalData[i].length; j++) {
-                System.out.print(String.format("%4d", fractalData[i][j]));
-            }
-            System.out.println();
         }
 
     }

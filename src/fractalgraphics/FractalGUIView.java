@@ -1,9 +1,10 @@
 package fractalgraphics;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -46,10 +47,10 @@ public class FractalGUIView extends JFrame implements Observer {
 
     private int firstX, firstY, secondX = -1, secondY = -1;
 
-    private int leftX;
-    private int upperY;
-    private int rightX;
-    private int lowerY;
+    //    private int leftX;
+    //    private int upperY;
+    //    private int rightX;
+    //    private int lowerY;
 
     private int currentXSize = DEFAULT_X_RESOLUTION;
     private int curretnYSize = DEFAULT_Y_RESOLUTION;
@@ -69,9 +70,11 @@ public class FractalGUIView extends JFrame implements Observer {
     private void setupToolbar() {
 
         menuBar = new JMenuBar();
+        menuBar.setLayout(new GridLayout(2, 6));
         getContentPane().add(menuBar);
 
         resetButton = new JMenuItem("Reset");
+        resetButton.setLayout(new FlowLayout());
         menuBar.add(resetButton);
         resetButton.addActionListener(new ActionListener() {
 
@@ -195,7 +198,8 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         maxIterationInputField = new JTextField(controler.getMaxIterations());
-        menuBar.add(maxIterationInputField);
+        menuBar.add(maxIterationInputField, BorderLayout.EAST);
+        maxIterationInputField.setSize(new Dimension(20, 20));
         maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
         maxIterationInputField.addActionListener(new ActionListener() {
 
@@ -285,17 +289,23 @@ public class FractalGUIView extends JFrame implements Observer {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                // TODO Auto-generated method stub
+
+                firstX = secondX;
+                firstY = secondY;
+                secondX = e.getX();
+                secondY = e.getY();
 
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
 
+                firstX = secondX;
+                firstY = secondY;
                 secondX = e.getX();
                 secondY = e.getY();
 
-                controler.applyTranslateScreen(-1 * Math.abs(firstX - secondX), Math.abs(firstY - secondY));
+                controler.applyTranslateScreen(-1 * (firstX - secondX), -1 * (firstY - secondY));
                 repaint();
 
             }
@@ -348,8 +358,8 @@ public class FractalGUIView extends JFrame implements Observer {
             public void mousePressed(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    firstX = e.getX();
-                    firstY = e.getY();
+                    //                    firstX = e.getX();
+                    //                    firstY = e.getY();
                 }
                 if (e.getButton() == MouseEvent.BUTTON3) {
                     controler.toggleAnimation();
@@ -382,15 +392,15 @@ public class FractalGUIView extends JFrame implements Observer {
 
     }
 
-    @Override
-    public void paint(Graphics g) {
-
-        super.paint(g);
-        if (secondX != -1) {
-            g.setColor(Color.white);
-            g.drawRect(firstX, upperY, rightX - leftX, upperY - lowerY);
-        }
-
-    }
+    //    @Override
+    //    public void paint(Graphics g) {
+    //
+    //        super.paint(g);
+    //        if (secondX != -1) {
+    //            g.setColor(Color.white);
+    //            g.drawRect(firstX, upperY, rightX - leftX, upperY - lowerY);
+    //        }
+    //
+    //    }
 
 }

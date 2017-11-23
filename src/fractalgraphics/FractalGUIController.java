@@ -76,7 +76,7 @@ public class FractalGUIController {
             public void actionPerformed(ActionEvent e) {
 
                 applyNewConfig(centreScale(currentConfig, 0.9f), false);
-                setMaxIterations(currentConfig.getMaxIterations() + 5);
+                //                setMaxIterations(currentConfig.getMaxIterations() + 5);
                 animationHistory.add(currentConfig);
                 view.repaint();
             }
@@ -89,6 +89,7 @@ public class FractalGUIController {
 
         if (animationTimer.isRunning()) {
             animationTimer.stop();
+            applyNewConfig(currentConfig, true);
         } else {
             animationHistory.clear();
             animationTimer.start();
@@ -207,8 +208,10 @@ public class FractalGUIController {
 
         double realRange = currentConfig.getMaxReal() - currentConfig.getMinReal();
         double imaginaryRange = currentConfig.getMaxImaginary() - currentConfig.getMinImaginary();
-
-        applyTranslate(0.001 * x * realRange, 0.001 * y * imaginaryRange);
+        System.out.println(x);
+        System.out.println(y);
+        applyTranslate(x * realRange / currentConfig.getxResolution(),
+                y * imaginaryRange / currentConfig.getyResolution());
 
     }
 
