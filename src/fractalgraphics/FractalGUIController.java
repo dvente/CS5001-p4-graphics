@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +31,9 @@ public class FractalGUIController {
 	private final int animationSeconds = 2;
 	private final int frameRate = 24;
 	private final int animationFrames = 2 * frameRate;
+	private final List<Color[]> colorMappingValues = new ArrayList<Color[]>();
+	private int currentColorMappingIndex = 0;
+	
 
 	public static void main(String[] args) {
 
@@ -35,29 +41,31 @@ public class FractalGUIController {
 	}
 
 	public FractalGUIController() {
-//		defaultConfig = new FractalGUIConfig(FractalGUIView.DEFAULT_X_RESOLUTION, FractalGUIView.DEFAULT_Y_RESOLUTION,
-//				MandelbrotCalculator.INITIAL_MIN_REAL, MandelbrotCalculator.INITIAL_MAX_REAL,
-//				MandelbrotCalculator.INITIAL_MIN_IMAGINARY, MandelbrotCalculator.INITIAL_MAX_IMAGINARY,
-//				MandelbrotCalculator.INITIAL_MAX_ITERATIONS, MandelbrotCalculator.DEFAULT_RADIUS_SQUARED,
-//				new ColorMapping(MandelbrotCalculator.INITIAL_MAX_ITERATIONS,
-//						new Color[] { new Color(0, 7, 100), new Color(32, 107, 203), new Color(237, 255, 255),
-//								new Color(255, 170, 0), new Color(0, 2, 0) }));
-		
-		
-//		defaultConfig = new FractalGUIConfig(FractalGUIView.DEFAULT_X_RESOLUTION, FractalGUIView.DEFAULT_Y_RESOLUTION,
-//				1, 7,
-//				1,7,
-//				MandelbrotCalculator.INITIAL_MAX_ITERATIONS, MandelbrotCalculator.DEFAULT_RADIUS_SQUARED,
-//				new ColorMapping(MandelbrotCalculator.INITIAL_MAX_ITERATIONS,
-//						new Color[] { new Color(0, 7, 100), new Color(32, 107, 203), new Color(237, 255, 255),
-//								new Color(255, 170, 0), new Color(0, 2, 0) }));
+		colorMappingValues.add(new Color[] { Color.WHITE, Color.BLACK});
+		colorMappingValues.add(new Color[] { Color.WHITE,new Color(191,0,0), Color.BLACK});
+		colorMappingValues.add(new Color[] { Color.WHITE, new Color(32, 107, 203), Color.BLACK});
+		colorMappingValues.add(new Color[] { Color.WHITE,new Color(0,131,31), Color.BLACK});
+		colorMappingValues.add(new Color[] { Color.WHITE,new Color(255, 170, 0), new Color(191,0,0), new Color(0,131,31), Color.BLACK});
+		colorMappingValues.add(new Color[] { new Color(0, 7, 100), new Color(32, 107, 203), new Color(237, 255, 255),
+				new Color(255, 170, 0), new Color(0, 2, 0) });
 		defaultConfig = new FractalGUIConfig(FractalGUIView.DEFAULT_X_RESOLUTION, FractalGUIView.DEFAULT_Y_RESOLUTION,
 				MandelbrotCalculator.INITIAL_MIN_REAL, MandelbrotCalculator.INITIAL_MAX_REAL,
 				MandelbrotCalculator.INITIAL_MIN_IMAGINARY, MandelbrotCalculator.INITIAL_MAX_IMAGINARY,
 				MandelbrotCalculator.INITIAL_MAX_ITERATIONS, MandelbrotCalculator.DEFAULT_RADIUS_SQUARED,
 				new ColorMapping(MandelbrotCalculator.INITIAL_MAX_ITERATIONS,
-						new Color[] { Color.WHITE, Color.BLACK}));
+						colorMappingValues.get(currentColorMappingIndex)));
+		
+		
 
+//		defaultConfig = new FractalGUIConfig(FractalGUIView.DEFAULT_X_RESOLUTION, FractalGUIView.DEFAULT_Y_RESOLUTION,
+//				MandelbrotCalculator.INITIAL_MIN_REAL, MandelbrotCalculator.INITIAL_MAX_REAL,
+//				MandelbrotCalculator.INITIAL_MIN_IMAGINARY, MandelbrotCalculator.INITIAL_MAX_IMAGINARY,
+//				MandelbrotCalculator.INITIAL_MAX_ITERATIONS, MandelbrotCalculator.DEFAULT_RADIUS_SQUARED,
+//				new ColorMapping(MandelbrotCalculator.INITIAL_MAX_ITERATIONS,
+//						new Color[] { Color.WHITE, Color.BLACK}));
+
+		
+		
 		currentConfig = defaultConfig;
 		model = new FractalGUIModel(defaultConfig);
 		view = new FractalGUIView(this, model.calcModel());
@@ -69,9 +77,21 @@ public class FractalGUIController {
 
 	}
 	
+	public void applyNextColorMapping() {
+		currentColorMappingIndex = (currentColorMappingIndex+1)%colorMappingValues.size();
+		ColorMapping newColorMapping = new ColorMapping(currentConfig.getMaxIterations(),
+				colorMappingValues.get(currentColorMappingIndex));
+
+		applyNewConfig(new FractalGUIConfig(currentConfig.getxResolution(), currentConfig.getyResolution(),
+				currentConfig.getMinReal(), currentConfig.getMaxReal(), currentConfig.getMinImaginary(),
+				currentConfig.getMaxImaginary(), currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), newColorMapping),
+				true);
+		
+	}
+	
 	public void playZoomAnimation() {
 		for (int i = 0; i < animationFrames; i++) {
-			animationQueue.enqueue(centreScale(0.6f));
+			animationQueue.enqueue(centreScale(0.3f));
 		}
 		
 		while(!animationQueue.isEmpty()) {
@@ -100,8 +120,7 @@ public class FractalGUIController {
 
 	public double realFromScreenX(int x) {
 
-		return currentConfig.getMinReal()
-				+ (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
+		return currentConfig.getMinReal() + (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
 	}
 
 	public double imaginaryFromScreenY(int y) {
@@ -177,12 +196,38 @@ public class FractalGUIController {
 		view.setMaxIterationsText(newConfig.getMaxIterations());
 
 	}
+	
+	public FractalGUIConfig translate(int real, int im) {
+
+		return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), currentConfig.getMinReal() - real,
+				currentConfig.getMaxReal() - real, currentConfig.getMinImaginary() - im, currentConfig.getMaxImaginary() - im,
+				currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
+
+	}
+	
+	public void applyTranslate(int real, int im) {
+
+		applyNewConfig(translate(real,im),true);
+
+	}
 
 	public FractalGUIConfig recentre(int leftX, int upperY, int rightX, int lowerY) {
 
 		return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), realFromScreenX(leftX),
 				realFromScreenX(rightX), imaginaryFromScreenY(lowerY), imaginaryFromScreenY(upperY),
 				currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
+
+	}
+	
+	public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
+
+		assert leftX < rightX;
+		assert upperY > lowerY;
+		assert screenXFromReal(realFromScreenX(leftX)) == leftX;
+		assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
+		assert screenXFromReal(realFromScreenX(rightX)) == rightX;
+		assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
+		applyNewConfig(recentre(leftX, upperY, rightX, lowerY),true);
 
 	}
 
@@ -201,17 +246,7 @@ public class FractalGUIController {
 
 	}
 	
-	public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
 
-		assert leftX < rightX;
-		assert upperY > lowerY;
-		assert screenXFromReal(realFromScreenX(leftX)) == leftX;
-		assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
-		assert screenXFromReal(realFromScreenX(rightX)) == rightX;
-		assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
-		applyNewConfig(recentre(leftX, upperY, rightX, lowerY),true);
-
-	}
 
 	public void applyCentreScale(float factor) {
 		

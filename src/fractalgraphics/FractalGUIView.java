@@ -1,6 +1,7 @@
 package fractalgraphics;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -8,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -201,11 +204,33 @@ public class FractalGUIView extends JFrame implements Observer {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					controler.setMaxIterations(Integer.parseInt(maxIterationInputField.getText()));
+					controler.setMaxIterations(Integer.parseInt(maxIterationInputField.getText().trim()));
+				
 				} catch (NumberFormatException nfe) {
 					showErrorDialoge("Please input a number");
 				}
 
+			}
+		});
+		maxIterationInputField.addKeyListener(new KeyListener(){ 
+
+		    public void keyPressed(KeyEvent e){ 
+		    	if(e.getKeyCode()==KeyEvent.VK_SPACE){
+		            controler.applyNextColorMapping();  
+		         }
+
+		    }
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+		         
+				
 			}
 		});
 
@@ -291,7 +316,7 @@ public class FractalGUIView extends JFrame implements Observer {
 					int lowerY = upperY - Math.max(width, height);
 
 					if (rightX > leftX && upperY > lowerY) {
-						controler.recentre(leftX, upperY, rightX, lowerY);
+						controler.applyRecentre(leftX, upperY, rightX, lowerY);
 					}
 					secondX = -1;
 				}
@@ -339,7 +364,8 @@ public class FractalGUIView extends JFrame implements Observer {
 
 		super.paint(g);
 		if (secondX != -1) {
-			g.drawRect(leftX, upperY, rightX - leftX, upperY - lowerY);
+			g.setColor(Color.white);
+			g.drawRect(firstX, upperY, rightX - leftX, upperY - lowerY);
 		}
 
 	}

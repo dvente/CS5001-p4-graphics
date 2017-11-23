@@ -1,8 +1,9 @@
 package fractalgraphics;
 
 import java.io.Serializable;
+import java.util.Observable;
 
-public class FractalGUIConfig implements Serializable{
+public class FractalGUIConfig extends Observable implements Serializable {
 
     @Override
     public String toString() {
@@ -22,8 +23,6 @@ public class FractalGUIConfig implements Serializable{
     private final int maxIterations;
     private final double radiusSquared;
     private final ColorMapping colorMaping;
-    //    private final Color startingColor;
-    //    private final Color endColor;
 
     public int getxResolution() {
 
