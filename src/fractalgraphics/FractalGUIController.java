@@ -28,31 +28,41 @@ import javax.swing.Timer;
  */
 public class FractalGUIController {
 
+    /** The Constant HALF_FACTOR. */
     private static final double HALF_FACTOR = 0.5;
 
+    /** The Constant ALMOST_BLACK. */
     private static final Color ALMOST_BLACK = new Color(0, 2, 0);
 
+    /** The Constant GOLD. */
     private static final Color GOLD = new Color(237, 255, 255);
 
+    /** The Constant DARK_BLUE. */
     private static final Color DARK_BLUE = new Color(0, 7, 100);
 
+    /** The Constant DARK_YELLOW. */
     private static final Color DARK_YELLOW = new Color(255, 170, 0);
 
+    /** The Constant DARK_GREEN. */
     private static final Color DARK_GREEN = new Color(0, 131, 31);
 
+    /** The Constant LIGHT_BLUE. */
     private static final Color LIGHT_BLUE = new Color(32, 107, 203);
 
+    /** The Constant MILLISECONDS_IN_SECONDS. */
     private static final int MILLISECONDS_IN_SECONDS = 1000;
 
+    /** The Constant ANIMATION_ZOOM_FACTOR. */
     private static final float ANIMATION_ZOOM_FACTOR = 0.9f;
 
+    /** The Constant DARK_RED. */
     private static final Color DARK_RED = new Color(191, 0, 0);
 
     /**
      * The main method.
      *
      * @param args
-     *            the arguments
+     *            the arguments from the commandlines
      */
     public static void main(String[] args) {
 
@@ -230,7 +240,7 @@ public class FractalGUIController {
         double width = config.getMaxReal() - config.getMinReal();
         double height = config.getMaxImaginary() - config.getMinImaginary();
 
-        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(),
+        return new FractalGUIConfig(view.getXSize(), view.getYSize(),
                 (config.getCentreReal() - (width * HALF_FACTOR * d)),
                 (config.getCentreReal() + (width * HALF_FACTOR * d)),
                 (config.getCentreImaginary() - (height * HALF_FACTOR * d)),
@@ -341,64 +351,6 @@ public class FractalGUIController {
     }
 
     /**
-     * Converts a screen x coordinate to the corresponding real coordinate.
-     *
-     * @param x
-     *            the x
-     * @return the corresponding Real Coordinate
-     */
-    //    public double realFromScreenX(int x) {
-    //
-    //        return currentConfig.getMinReal()
-    //                + (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
-    //    }
-
-    /**
-     * Recentre.
-     *
-     * @param leftX
-     *            the left X
-     * @param upperY
-     *            the upper Y
-     * @param rightX
-     *            the right X
-     * @param lowerY
-     *            the lower Y
-     * @return the fractal GUI config
-     */
-    //    public FractalGUIConfig recentre(int leftX, int upperY, int rightX, int lowerY) {
-    //
-    //        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), realFromScreenX(leftX),
-    //                realFromScreenX(rightX), imaginaryFromScreenY(lowerY), imaginaryFromScreenY(upperY),
-    //                currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
-    //
-    //    }
-
-    //    /**
-    //     * Apply recentre.
-    //     *
-    //     * @param leftX
-    //     *            the left X
-    //     * @param upperY
-    //     *            the upper Y
-    //     * @param rightX
-    //     *            the right X
-    //     * @param lowerY
-    //     *            the lower Y
-    //     */
-    //    public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
-    //
-    //        //        assert leftX < rightX;
-    //        //        assert upperY > lowerY;
-    //        //        assert screenXFromReal(realFromScreenX(leftX)) == leftX;
-    //        //        assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
-    //        //        assert screenXFromReal(realFromScreenX(rightX)) == rightX;
-    //        //        assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
-    //        applyNewConfig(recentre(leftX, upperY, rightX, lowerY), true);
-    //
-    //    }
-
-    /**
      * Redo reaply the most recently undone configuration.
      */
     public void redo() {
@@ -482,7 +434,7 @@ public class FractalGUIController {
      */
     public FractalGUIConfig translate(double real, double im) {
 
-        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), currentConfig.getMinReal() - real,
+        return new FractalGUIConfig(view.getXSize(), view.getYSize(), currentConfig.getMinReal() - real,
                 currentConfig.getMaxReal() - real, currentConfig.getMinImaginary() - im,
                 currentConfig.getMaxImaginary() - im, currentConfig.getMaxIterations(),
                 currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
@@ -498,5 +450,43 @@ public class FractalGUIController {
         applyNewConfig(configHistory.pop(), false);
 
     }
+
+    // The following commented functions are now depricated, but are left in for reference
+    //    public double realFromScreenX(int x) {
+    //
+    //        return currentConfig.getMinReal()
+    //                + (((x * (currentConfig.getMaxReal() - currentConfig.getMinReal())) / currentConfig.getxResolution()));
+    //    }
+    //    public FractalGUIConfig recentre(int leftX, int upperY, int rightX, int lowerY) {
+    //
+    //        return new FractalGUIConfig(view.getCurrentXSize(), view.getCurrentYSize(), realFromScreenX(leftX),
+    //                realFromScreenX(rightX), imaginaryFromScreenY(lowerY), imaginaryFromScreenY(upperY),
+    //                currentConfig.getMaxIterations(), currentConfig.getRadiusSquared(), currentConfig.getColorMapping());
+    //
+    //    }
+
+    //    /**
+    //     * Apply recentre.
+    //     *
+    //     * @param leftX
+    //     *            the left X
+    //     * @param upperY
+    //     *            the upper Y
+    //     * @param rightX
+    //     *            the right X
+    //     * @param lowerY
+    //     *            the lower Y
+    //     */
+    //    public void applyRecentre(int leftX, int upperY, int rightX, int lowerY) {
+    //
+    //        //        assert leftX < rightX;
+    //        //        assert upperY > lowerY;
+    //        //        assert screenXFromReal(realFromScreenX(leftX)) == leftX;
+    //        //        assert screenYFromImaginary(imaginaryFromScreenY(upperY)) == upperY;
+    //        //        assert screenXFromReal(realFromScreenX(rightX)) == rightX;
+    //        //        assert screenYFromImaginary(imaginaryFromScreenY(lowerY)) == lowerY;
+    //        applyNewConfig(recentre(leftX, upperY, rightX, lowerY), true);
+    //
+    //    }
 
 }

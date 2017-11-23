@@ -200,7 +200,7 @@ public class FractalGUIView extends JFrame implements Observer {
      *
      * @return the current X size
      */
-    public int getCurrentXSize() {
+    public int getXSize() {
 
         return DEFAULT_X_RESOLUTION;
     }
@@ -210,7 +210,7 @@ public class FractalGUIView extends JFrame implements Observer {
      *
      * @return the current Y size
      */
-    public int getCurrentYSize() {
+    public int getYSize() {
 
         return DEFAULT_Y_RESOLUTION;
     }
