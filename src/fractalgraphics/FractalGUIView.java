@@ -135,7 +135,8 @@ public class FractalGUIView extends JFrame implements Observer {
             public void mouseWheelMoved(MouseWheelEvent e) {
 
                 int wheelRotationClicks = e.getWheelRotation();
-                if (wheelRotationClicks < 0) {
+                System.out.println(wheelRotationClicks);
+                if (wheelRotationClicks != 0) {
                     controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
                 }
 
