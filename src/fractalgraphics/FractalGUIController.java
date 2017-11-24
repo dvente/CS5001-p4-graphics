@@ -62,7 +62,7 @@ public class FractalGUIController {
      * The main method.
      *
      * @param args
-     *            the arguments from the commandlines
+     *            the arguments from the command lines
      */
     public static void main(String[] args) {
 
