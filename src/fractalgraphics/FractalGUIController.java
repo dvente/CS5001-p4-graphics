@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Stack;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -451,6 +452,19 @@ public class FractalGUIController {
 
     }
 
+	public void close() {
+	int result = JOptionPane.showConfirmDialog(
+            view,
+            "Are you sure you want to exit the application?",
+            "Exit Application",
+            JOptionPane.YES_NO_OPTION);
+ 
+        if (result == JOptionPane.YES_OPTION)
+            view.dispose();
+	
+	
+}
+    
     // The following commented functions are now depricated, but are left in for reference
     //    public double realFromScreenX(int x) {
     //

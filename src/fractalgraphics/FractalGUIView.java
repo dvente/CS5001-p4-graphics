@@ -5,6 +5,7 @@ package fractalgraphics;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +27,7 @@ import java.util.Observer;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -76,6 +79,12 @@ public class FractalGUIView extends JFrame implements Observer {
 
     /** The export to PNG button. */
     private JMenuItem exportToPNGButton;
+    
+    /** The help. */
+    private JMenuItem helpButton;
+    
+    /** The about. */
+    private JMenuItem aboutButton;
 
     /** The max iteration input field. */
     private JTextField maxIterationInputField;
@@ -135,7 +144,8 @@ public class FractalGUIView extends JFrame implements Observer {
             public void mouseWheelMoved(MouseWheelEvent e) {
 
                 int wheelRotationClicks = e.getWheelRotation();
-                if (wheelRotationClicks < 0) {
+                System.out.println(wheelRotationClicks);
+                if (wheelRotationClicks != 0) {
                     controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
                 }
 
@@ -289,7 +299,7 @@ public class FractalGUIView extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
 
                 JFileChooser fc = new JFileChooser();
-                int returnVal = fc.showOpenDialog(fc);
+                int returnVal = fc.showSaveDialog(fc);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
                     try {
@@ -342,7 +352,7 @@ public class FractalGUIView extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
 
                 JFileChooser fc = new JFileChooser();
-                int returnVal = fc.showOpenDialog(fc);
+                int returnVal = fc.showSaveDialog(fc);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
                     try {
@@ -359,6 +369,34 @@ public class FractalGUIView extends JFrame implements Observer {
             }
         });
 
+        helpButton = new JMenuItem("Help");
+        menuBar.add(helpButton);
+        helpButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	JLabel label = new JLabel("<html>Welcome to The Mandelbrot GUI Explorer. <br><br> <ul><li>You can click and drag the image or use the arrow keys, and zoom in and out with the mousewheel.</li><li> Clicking with the right mouse button will toggle a zoom animation.</li><li>You can cycle between different colour mappings by pressing the spacebar.</li><li>Using the buttons at the top you can reset, save, load, export to PNG, undo and redo any changes to the current image shown.</li><li>You can change the number of iterations used to draw the image by changing it in the text bar at the top. Increasing the number will increase the resolution of the image, but make the application slower.</li><li>You can exit the application by pressing the ESC button</li></ul>  </html>");
+            	label.setFont(new Font("Arial", Font.BOLD, 18));
+            	JOptionPane.showMessageDialog(null,label,"Help",JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
+        
+
+        
+        aboutButton = new JMenuItem("About");
+        menuBar.add(aboutButton);
+        aboutButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	JLabel label = new JLabel("<html>This application was developed by Daniel Vente (<a href=\"https://github.com/dvente\">https://github.com/dvente</a>) as an assignement for CS5001 at the Universtiry of St. Andrews 2017.<br> Code for the Mandelbrot calculations was provided by Jonathan Lewis (jon.lewis at st-andrews.ac.uk)</html>");
+            	label.setFont(new Font("Arial", Font.BOLD, 18));
+            	JOptionPane.showMessageDialog(null,label,"Help",JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
         maxIterationInputField = new JTextField(controler.getMaxIterations());
         menuBar.add(maxIterationInputField, BorderLayout.EAST);
         maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
@@ -397,6 +435,10 @@ public class FractalGUIView extends JFrame implements Observer {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     controler.applyTranslateScreen(-1, 0);
                 }
+                
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                	controler.close();
+                }
 
             }
 
@@ -415,7 +457,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
     }
 
-    /**
+	/**
      * Show error dialoge.
      *
      * @param message
