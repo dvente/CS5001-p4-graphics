@@ -28,10 +28,12 @@ import java.util.Observer;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 /**
  * The Class FractalGUIView.
@@ -242,12 +244,20 @@ public class FractalGUIView extends JFrame implements Observer {
     private void setupToolbar() {
 
         menuBar = new JMenuBar();
-        menuBar.setLayout(new GridLayout(MENU_BAR_HEIGHT, MENU_BAR_WIDTH));
+        menuBar.setLayout(new FlowLayout(FlowLayout.LEADING));
         getContentPane().add(menuBar);
+        
+        JMenu fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
 
+        JMenu editMenu = new JMenu("Edit");
+        menuBar.add(editMenu);
+        
         resetButton = new JMenuItem("Reset");
         resetButton.setLayout(new FlowLayout());
-        menuBar.add(resetButton);
+        KeyStroke keyStrokeToReset = KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK);
+        resetButton.setAccelerator(keyStrokeToReset);
+        editMenu.add(resetButton);
         resetButton.addActionListener(new ActionListener() {
 
             @Override
@@ -259,7 +269,9 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         undoButton = new JMenuItem("Undo");
-        menuBar.add(undoButton);
+        KeyStroke keyStrokeToUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        undoButton.setAccelerator(keyStrokeToUndo);
+        editMenu.add(undoButton);
         undoButton.addActionListener(new ActionListener() {
 
             @Override
@@ -276,7 +288,9 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         redoButton = new JMenuItem("Redo");
-        menuBar.add(redoButton);
+        KeyStroke keyStrokeToRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+        redoButton.setAccelerator(keyStrokeToRedo);
+        editMenu.add(redoButton);
         redoButton.addActionListener(new ActionListener() {
 
             @Override
@@ -292,7 +306,9 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         saveButton = new JMenuItem("Save");
-        menuBar.add(saveButton);
+        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+        saveButton.setAccelerator(keyStrokeToSave);
+        fileMenu.add(saveButton);
         saveButton.addActionListener(new ActionListener() {
 
             @Override
@@ -316,8 +332,10 @@ public class FractalGUIView extends JFrame implements Observer {
             }
         });
 
-        loadButton = new JMenuItem("Load");
-        menuBar.add(loadButton);
+        loadButton = new JMenuItem("Open");
+        KeyStroke keyStrokeToLoad = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+        loadButton.setAccelerator(keyStrokeToLoad);
+        fileMenu.add(loadButton);
         loadButton.addActionListener(new ActionListener() {
 
             @Override
@@ -345,7 +363,9 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         exportToPNGButton = new JMenuItem("Export to PNG");
-        menuBar.add(exportToPNGButton);
+        KeyStroke keyStrokeToExport = KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK);
+        exportToPNGButton.setAccelerator(keyStrokeToExport);
+        fileMenu.add(exportToPNGButton);
         exportToPNGButton.addActionListener(new ActionListener() {
 
             @Override
@@ -397,7 +417,7 @@ public class FractalGUIView extends JFrame implements Observer {
             }
         });
         
-        maxIterationInputField = new JTextField(controler.getMaxIterations());
+        maxIterationInputField = new JTextField(5);
         menuBar.add(maxIterationInputField, BorderLayout.EAST);
         maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
         maxIterationInputField.addActionListener(new ActionListener() {
