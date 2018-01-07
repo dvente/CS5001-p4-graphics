@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Stack;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -65,8 +66,8 @@ public class FractalGUIController {
      *            the arguments from the command lines
      */
     public static void main(String[] args) {
-
-        new FractalGUIController();
+    	
+        new FractalGUIController(Integer.parseInt(args[0]));
     }
 
     /** The default config. */
@@ -105,7 +106,7 @@ public class FractalGUIController {
     /**
      * Instantiates a new fractal GUI controller.
      */
-    public FractalGUIController() {
+    public FractalGUIController(int numbOfThreads) {
         colorMappingValues.add(new Color[] {Color.WHITE, Color.BLACK });
         colorMappingValues.add(new Color[] {Color.WHITE, DARK_RED, Color.BLACK });
         colorMappingValues.add(new Color[] {Color.WHITE, LIGHT_BLUE, Color.BLACK });
@@ -120,7 +121,7 @@ public class FractalGUIController {
                         colorMappingValues.get(currentColorMappingIndex)));
 
         currentConfig = defaultConfig;
-        model = new FractalGUIModel(defaultConfig);
+        model = new FractalGUIModel(defaultConfig, numbOfThreads);
         view = new FractalGUIView(this, model.calcModel());
         model.addObserver(view);
 
@@ -451,6 +452,19 @@ public class FractalGUIController {
 
     }
 
+	public void close() {
+	int result = JOptionPane.showConfirmDialog(
+            view,
+            "Are you sure you want to exit the application?",
+            "Exit Application",
+            JOptionPane.YES_NO_OPTION);
+ 
+        if (result == JOptionPane.YES_OPTION)
+            view.dispose();
+	
+	
+}
+    
     // The following commented functions are now depricated, but are left in for reference
     //    public double realFromScreenX(int x) {
     //

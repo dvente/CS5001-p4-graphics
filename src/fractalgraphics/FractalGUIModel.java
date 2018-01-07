@@ -1,6 +1,8 @@
 package fractalgraphics;
 
 import java.util.Observable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The Class FractalGUIModel. Acts as a adaptor to the provided model
@@ -10,20 +12,22 @@ import java.util.Observable;
 public class FractalGUIModel extends Observable {
 
     /** The mandel calc. */
-    private final MandelbrotCalculator mandelCalc = new MandelbrotCalculator();
+    private final MandelbrotCalculator mandelCalc;
 
     /** The current config. */
     private FractalGUIConfig currentConfig = null;
 
+	
     /**
      * Instantiates a new fractal GUI model.
      *
      * @param currentConfig
      *            the current config
      */
-    public FractalGUIModel(FractalGUIConfig currentConfig) {
+    public FractalGUIModel(FractalGUIConfig currentConfig, int numbOfThreads) {
         super();
         this.currentConfig = currentConfig;
+        mandelCalc = new MandelbrotCalculator(numbOfThreads);
     }
 
     /**
@@ -33,7 +37,7 @@ public class FractalGUIModel extends Observable {
      */
     public int[][] calcModel() {
 
-        return calcModel(currentConfig);
+        return calcModelThreaded(currentConfig);
     }
 
     /**
@@ -51,7 +55,31 @@ public class FractalGUIModel extends Observable {
                 config.getMaxReal(), config.getMinImaginary(), config.getMaxImaginary(), config.getMaxIterations(),
                 config.getRadiusSquared());
     }
-
+    
+    public int[][] calcModelThreaded(FractalGUIConfig config){
+    
+    	System.out.println(config.toString());
+    	int[][] parallelData = mandelCalc.calcMandelbrotSetThreaded(config.getxResolution(), config.getyResolution(), config.getMinReal(),
+                config.getMaxReal(), config.getMinImaginary(), config.getMaxImaginary(), config.getMaxIterations(),
+                config.getRadiusSquared());
+    	int[][] seqData = mandelCalc.calcMandelbrotSet(config.getxResolution(), config.getyResolution(), config.getMinReal(),
+                config.getMaxReal(), config.getMinImaginary(), config.getMaxImaginary(), config.getMaxIterations(),
+                config.getRadiusSquared());
+    	for (int i = 0; i < seqData.length; i++) {
+			for (int j = 0; j < seqData[0].length; j++) {
+				assert seqData[i][j] == parallelData[i][j] : String.format("(i%d,r%d) : s = %d, p = %d", i,j,seqData[i][j],parallelData[i][j]) ;
+			}
+		}
+    	
+    	
+        return mandelCalc.calcMandelbrotSetThreaded(config.getxResolution(), config.getyResolution(), config.getMinReal(),
+                config.getMaxReal(), config.getMinImaginary(), config.getMaxImaginary(), config.getMaxIterations(),
+                config.getRadiusSquared());
+   	
+    }
+    
+    
+    
     /**
      * Sets the current config.
      *
@@ -62,7 +90,7 @@ public class FractalGUIModel extends Observable {
 
         this.currentConfig = config;
         setChanged();
-        notifyObservers(calcModel(config));
+        notifyObservers(calcModelThreaded(config));
 
     }
 
