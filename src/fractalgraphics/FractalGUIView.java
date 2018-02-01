@@ -7,9 +7,9 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -17,7 +17,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,10 +49,10 @@ public class FractalGUIView extends JFrame implements Observer {
     private static final long serialVersionUID = -4501449361859666201L;
 
     /** The Constant DEFAULT_X_RESOLUTION. */
-    public static final int DEFAULT_X_RESOLUTION = 20;
+    public static final int DEFAULT_X_RESOLUTION = 500;
 
     /** The Constant DEFAULT_Y_RESOLUTION. */
-    public static final int DEFAULT_Y_RESOLUTION = 20;
+    public static final int DEFAULT_Y_RESOLUTION = 500;
 
     /** The controler. */
     private FractalGUIController controler;
@@ -81,10 +80,10 @@ public class FractalGUIView extends JFrame implements Observer {
 
     /** The export to PNG button. */
     private JMenuItem exportToPNGButton;
-    
+
     /** The help. */
     private JMenuItem helpButton;
-    
+
     /** The about. */
     private JMenuItem aboutButton;
 
@@ -146,7 +145,6 @@ public class FractalGUIView extends JFrame implements Observer {
             public void mouseWheelMoved(MouseWheelEvent e) {
 
                 int wheelRotationClicks = e.getWheelRotation();
-                System.out.println(wheelRotationClicks);
                 if (wheelRotationClicks != 0) {
                     controler.applyCentreScale(Math.pow(zoomInFactor, wheelRotationClicks));
                 }
@@ -246,16 +244,16 @@ public class FractalGUIView extends JFrame implements Observer {
         menuBar = new JMenuBar();
         menuBar.setLayout(new FlowLayout(FlowLayout.LEADING));
         getContentPane().add(menuBar);
-        
+
         JMenu fileMenu = new JMenu("File");
         menuBar.add(fileMenu);
 
         JMenu editMenu = new JMenu("Edit");
         menuBar.add(editMenu);
-        
+
         resetButton = new JMenuItem("Reset");
         resetButton.setLayout(new FlowLayout());
-        KeyStroke keyStrokeToReset = KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToReset = KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK);
         resetButton.setAccelerator(keyStrokeToReset);
         editMenu.add(resetButton);
         resetButton.addActionListener(new ActionListener() {
@@ -269,7 +267,7 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         undoButton = new JMenuItem("Undo");
-        KeyStroke keyStrokeToUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK);
         undoButton.setAccelerator(keyStrokeToUndo);
         editMenu.add(undoButton);
         undoButton.addActionListener(new ActionListener() {
@@ -288,7 +286,7 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         redoButton = new JMenuItem("Redo");
-        KeyStroke keyStrokeToRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK);
         redoButton.setAccelerator(keyStrokeToRedo);
         editMenu.add(redoButton);
         redoButton.addActionListener(new ActionListener() {
@@ -306,7 +304,7 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         saveButton = new JMenuItem("Save");
-        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToSave = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
         saveButton.setAccelerator(keyStrokeToSave);
         fileMenu.add(saveButton);
         saveButton.addActionListener(new ActionListener() {
@@ -333,7 +331,7 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         loadButton = new JMenuItem("Open");
-        KeyStroke keyStrokeToLoad = KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToLoad = KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK);
         loadButton.setAccelerator(keyStrokeToLoad);
         fileMenu.add(loadButton);
         loadButton.addActionListener(new ActionListener() {
@@ -363,7 +361,7 @@ public class FractalGUIView extends JFrame implements Observer {
         });
 
         exportToPNGButton = new JMenuItem("Export to PNG");
-        KeyStroke keyStrokeToExport = KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK);
+        KeyStroke keyStrokeToExport = KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK);
         exportToPNGButton.setAccelerator(keyStrokeToExport);
         fileMenu.add(exportToPNGButton);
         exportToPNGButton.addActionListener(new ActionListener() {
@@ -395,28 +393,28 @@ public class FractalGUIView extends JFrame implements Observer {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	
-            	JLabel label = new JLabel("<html>Welcome to The Mandelbrot GUI Explorer. <br><br> <ul><li>You can click and drag the image or use the arrow keys, and zoom in and out with the mousewheel.</li><li> Clicking with the right mouse button will toggle a zoom animation.</li><li>You can cycle between different colour mappings by pressing the spacebar.</li><li>Using the buttons at the top you can reset, save, load, export to PNG, undo and redo any changes to the current image shown.</li><li>You can change the number of iterations used to draw the image by changing it in the text bar at the top. Increasing the number will increase the resolution of the image, but make the application slower.</li><li>You can exit the application by pressing the ESC button</li></ul>  </html>");
-            	label.setFont(new Font("Arial", Font.BOLD, 18));
-            	JOptionPane.showMessageDialog(null,label,"Help",JOptionPane.INFORMATION_MESSAGE);
+
+                JLabel label = new JLabel(
+                        "<html>Welcome to The Mandelbrot GUI Explorer. <br><br> <ul><li>You can click and drag the image or use the arrow keys, and zoom in and out with the mousewheel.</li><li> Clicking with the right mouse button will toggle a zoom animation.</li><li>You can cycle between different colour mappings by pressing the spacebar.</li><li>Using the buttons at the top you can reset, save, load, export to PNG, undo and redo any changes to the current image shown.</li><li>You can change the number of iterations used to draw the image by changing it in the text bar at the top. Increasing the number will increase the resolution of the image, but make the application slower.</li><li>You can exit the application by pressing the ESC button</li></ul>  </html>");
+                label.setFont(new Font("Arial", Font.BOLD, 18));
+                JOptionPane.showMessageDialog(null, label, "Help", JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        
-        
 
-        
         aboutButton = new JMenuItem("About");
         menuBar.add(aboutButton);
         aboutButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	JLabel label = new JLabel("<html>This application was developed by Daniel Vente (<a href=\"https://github.com/dvente\">https://github.com/dvente</a>) as an assignement for CS5001 at the Universtiry of St. Andrews 2017.<br> Code for the Mandelbrot calculations was provided by Jonathan Lewis (jon.lewis at st-andrews.ac.uk)</html>");
-            	label.setFont(new Font("Arial", Font.BOLD, 18));
-            	JOptionPane.showMessageDialog(null,label,"Help",JOptionPane.INFORMATION_MESSAGE);
+
+                JLabel label = new JLabel(
+                        "<html>This application was developed by Daniel Vente (<a href=\"https://github.com/dvente\">https://github.com/dvente</a>) as an assignement for CS5001 at the Universtiry of St. Andrews 2017.<br> Code for the Mandelbrot calculations was provided by Jonathan Lewis (jon.lewis at st-andrews.ac.uk)</html>");
+                label.setFont(new Font("Arial", Font.BOLD, 18));
+                JOptionPane.showMessageDialog(null, label, "Help", JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        
+
         maxIterationInputField = new JTextField(5);
         menuBar.add(maxIterationInputField, BorderLayout.EAST);
         maxIterationInputField.setText(Integer.toString(controler.getMaxIterations()));
@@ -455,9 +453,9 @@ public class FractalGUIView extends JFrame implements Observer {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     controler.applyTranslateScreen(-1, 0);
                 }
-                
+
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                	controler.close();
+                    controler.close();
                 }
 
             }
@@ -477,7 +475,7 @@ public class FractalGUIView extends JFrame implements Observer {
 
     }
 
-	/**
+    /**
      * Show error dialoge.
      *
      * @param message
